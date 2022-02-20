@@ -1,0 +1,335 @@
+/**
+ * @file Buffer.h
+ * @author Giel Willemsen
+ * @brief Implement a buffer of a static size that drops elements the oldest elements once space runs out.
+ * @version 0.1
+ * @date 2022-02-20
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+#ifndef GW_LIBEMBEDDED_BUFFER_H
+#define GW_LIBEMBEDDED_BUFFER_H
+
+#include <stddef.h>
+
+namespace gw
+{
+    namespace libEmbedded
+    {
+        template <typename T, size_t TNumElements>
+        class Buffer
+        {
+        public:
+            typedef T *iterator;
+            typedef const T *const_iterator;
+
+        private:
+        public:
+        private:
+            char workspace[TNumElements * sizeof(T)];
+            size_t elementsUsed;
+
+        public:
+            /**
+             * @brief Construct a new empty rotating buffer.
+             *
+             */
+            constexpr Buffer() : workspace{0}, elementsUsed(0) {}
+
+            /**
+             * @brief Copies the other buffer into this instance.
+             *
+             * @param other The buffer to copy from.
+             */
+            template<size_t TNumOtherElements>
+            Buffer(const Buffer<T, TNumElements> &other);
+
+            /**
+             * @brief Destroy the buffer.
+             *
+             */
+            ~Buffer();
+
+            /**
+             * @brief Retrieve a modifiable iterator to the beginning of the buffer.
+             * @note Not according to naming standard because these are functions used by
+             * the STL for allowing iterators to be used with STL libraries.
+             *
+             * @return The beginning of the buffer.
+             */
+            iterator begin();
+
+            /**
+             * @brief Retrieve a readonly iterator to the beginning of the buffer.
+             * @note Not according to naming standard because these are functions used by
+             * the STL for allowing iterators to be used with STL libraries.
+             *
+             * @return The beginning of the buffer.
+             */
+            const_iterator begin() const;
+
+            /**
+             * @brief Retrieve a readonly iterator to the beginning of the buffer.
+             * @note Not according to naming standard because these are functions used by
+             * the STL for allowing iterators to be used with STL libraries.
+             *
+             * @return The beginning of the buffer.
+             */
+            const_iterator cbegin() const;
+
+            /**
+             * @brief Retrieve a modifiable iterator to the end of the buffer.
+             * @note Not according to naming standard because these are functions used by
+             * the STL for allowing iterators to be used with STL libraries.
+             *
+             * @return The end of the buffer.
+             */
+            iterator end();
+
+            /**
+             * @brief Retrieve a readonly iterator to the end of the buffer.
+             * @note Not according to naming standard because these are functions used by
+             * the STL for allowing iterators to be used with STL libraries.
+             *
+             * @return The end of the buffer.
+             */
+            const_iterator end() const;
+
+            /**
+             * @brief Retrieve a readonly iterator to the end of the buffer.
+             * @note Not according to naming standard because these are functions used by
+             * the STL for allowing iterators to be used with STL libraries.
+             *
+             * @return The end of the buffer.
+             */
+            const_iterator cend() const;
+
+            /**
+             * @brief Remove the give number of items from the buffer.
+             *
+             * @param count The number of elements to drop from the buffer.
+             */
+            void Remove(size_t count);
+
+            /**
+             * @brief Adds the given element to the back of the buffer. Poping at the beginning if necessary.
+             *
+             * @param element The element to add to the buffer.
+             */
+            void Add(const T &element);
+
+            /**
+             * @brief Adds the given elements to the back of the buffer. Poping at the beginning if necessary.
+             * If elementCount is more than fit in the buffer only the last items the given elements are actually copied and preserved.
+             *
+             * @param elements The elements to add to the buffer.
+             * @param elementCount The number of elements to add to the buffer.
+             */
+            void AddRange(T *elements, size_t elememtCount);
+
+            Buffer<T, TNumElements> &operator=(const Buffer<T, TNumElements> &other);
+
+            /**
+             * @brief Retrieve the element at the given index of the buffer.
+             * Warning: No bounds check!
+             *
+             * @param index The index to get the item from.
+             * @return The reference to the item at the given index.
+             */
+            T &operator[](size_t index);
+
+            /**
+             * @brief Retrieve a constant element at the given index of the buffer.
+             * Warning: No bounds check!
+             *
+             * @param index The index to get the item from.
+             * @return The constant reference to the item at the given index.
+             */
+            const T &operator[](size_t index) const;
+
+            /**
+             * @brief Retrieve the element at the given index of the buffer.
+             * Warning: No bounds check!
+             *
+             * @param index The index to get the item from.
+             * @return The reference to the item at the given index.
+             */
+            T &GetItem(size_t index);
+
+            /**
+             * @brief Retrieve a constant element at the given index of the buffer.
+             * Warning: No bounds check!
+             *
+             * @param index The index to get the item from.
+             * @return The constant reference to the item at the given index.
+             */
+            const T &GetItem(size_t index) const;
+
+            template <size_t TOtherNumElements>
+            bool operator==(const Buffer<T, TOtherNumElements> &other) const;
+
+            template <size_t TOtherNumElements>
+            bool operator!=(const Buffer<T, TOtherNumElements> &other) const;
+
+        private:
+            iterator GetIndexPointer(size_t index);
+
+            const_iterator GetConstIndexPointer(size_t index) const;
+        };
+
+        template <typename T, size_t TNumElements>
+        template<size_t TNumOtherElements>
+        Buffer<T, TNumElements>::Buffer(const Buffer<T, TNumElements> &other)
+        {
+            static_assert(TNumElements <= TNumElements, "TNumOtherElements must be of equal size or less than the targets buffer TNumElements.");
+            for (size_t i = 0; i < other.elementsUsed; i++)
+            {
+                T *memory = GetIndexPointer(i);
+                new (memory) T(other.GetItem(i));
+            }
+        }
+
+        template <typename T, size_t TNumElements>
+        Buffer<T, TNumElements>::~Buffer()
+        {
+            for (size_t i = 0; i < this->elementsUsed; i++)
+            {
+                this->GetIndexPointer(i)->~T();
+            }
+        }
+
+        template <typename T, size_t TNumElements>
+        Buffer<T, TNumElements>::iterator Buffer<T, TNumElements>::begin()
+        {
+            return this->GetIndexPointer(0);
+        }
+
+        template <typename T, size_t TNumElements>
+        Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::begin() const
+        {
+            return this->GetConstIndexPointer(0);
+        }
+
+        template <typename T, size_t TNumElements>
+        Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::cbegin() const
+        {
+            return this->GetConstIndexPointer(0);
+        }
+
+        template <typename T, size_t TNumElements>
+        Buffer<T, TNumElements>::iterator Buffer<T, TNumElements>::end()
+        {
+            return this->GetIndexPointer(this->elementsUsed);
+        }
+
+        template <typename T, size_t TNumElements>
+        Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::end() const
+        {
+            return this->GetConstIndexPointer(this->elementsUsed);
+        }
+
+        template <typename T, size_t TNumElements>
+        Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::cend() const
+        {
+            return this->GetConstIndexPointer(this->elementsUsed);
+        }
+
+        template <typename T, size_t TNumElements>
+        void Buffer<T, TNumElements>::Remove(size_t count);
+
+        template <typename T, size_t TNumElements>
+        void Buffer<T, TNumElements>::Add(const T &element);
+
+        template <typename T, size_t TNumElements>
+        void Buffer<T, TNumElements>::AddRange(T *elements, size_t elementCount);
+
+        template <typename T, size_t TNumElements>
+        Buffer<T, TNumElements> &Buffer<T, TNumElements>::operator=(const Buffer<T, TNumElements> &other)
+        {
+            for (size_t i = 0; i < other.elementsUsed; i++)
+            {
+                new (this->GetIndexPointer()) T(other[i]);
+            }
+            this->elementsUsed = other.elementsUsed;
+        }
+
+        template <typename T, size_t TNumElements>
+        T &Buffer<T, TNumElements>::operator[](size_t index)
+        {
+            return this->GetItem(index);
+        }
+
+        template <typename T, size_t TNumElements>
+        const T &Buffer<T, TNumElements>::operator[](size_t index) const
+        {
+            return this->GetItem(index);
+        }
+
+        template <typename T, size_t TNumElements>
+        T &Buffer<T, TNumElements>::GetItem(size_t index)
+        {
+            return *this->GetIndexPointer(index);
+        }
+
+        template <typename T, size_t TNumElements>
+        const T &Buffer<T, TNumElements>::GetItem(size_t index) const
+        {
+            return *this->GetConstIndexPointer(index);
+        }
+
+        template <typename T, size_t TNumElements>
+        template <size_t TOtherNumElements>
+        bool Buffer<T, TNumElements>::operator==(const Buffer<T, TOtherNumElements> &other) const
+        {
+            if (this->elementsmi0Used != other.elementsUsed)
+            {
+                return false;
+            }
+            for (size_t i = 0; i < this->elementsUsed; i++)
+            {
+                if (this->GetItem(i) != other.GetItem(i))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        template <typename T, size_t TNumElements>
+        template <size_t TOtherNumElements>
+        bool Buffer<T, TNumElements>::operator!=(const Buffer<T, TOtherNumElements> &other) const
+        {
+            if (this->elementsUsed != other.elementsUsed)
+            {
+                return true;
+            }
+
+            bool allmatch = true;
+            for (size_t i = 0; i < other.elementsUsed; i++)
+            {
+                if (other.GetItem(i) != other)
+                {
+                    allmatch = false;
+                    break;
+                }
+            }
+
+            return !allmatch;
+        }
+
+        template <typename T, size_t TNumElements>
+        Buffer<T, TNumElements>::iterator Buffer<T, TNumElements>::GetIndexPointer(size_t index)
+        {
+            return this->workspace + (index * sizeof(T));
+        }
+
+        template <typename T, size_t TNumElements>
+        Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::GetConstIndexPointer(size_t index) const
+        {
+            return this->workspace + (index * sizeof(T));
+        }
+    } // namespace libEmbedded
+} // namespace gw
+
+#endif // GW_LIBEMBEDDED_BUFFER_H
