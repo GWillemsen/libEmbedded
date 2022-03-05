@@ -9,31 +9,38 @@
  * 
  */
 
-#include "gw/libEmbedded/EdgeDetector.h"
+#include "libEmbedded/EdgeDetector.h"
 
-namespace gw
+namespace libEmbedded
 {
-    namespace libEmbedded
+    bool EdgeDetector::Update(bool newValue)
     {
-        bool EdgeDetector::Update(bool newValue)
+        bool hasEdge = false;
+        if (this->previousValue && newValue == false)
         {
-            bool hasEdge = false;
-            if (this->previousValue > newValue)
+            if (this->edgeType != EdgeType::RISING)
             {
-                if (this->edgeType != EdgeType::RISING)
-                {
-                    hasEdge = true;
-                }
+                hasEdge = true;
             }
-            else if (this->previousValue < newValue)
+        }
+        else if (this->previousValue == false && newValue)
+        {
+            if (this->edgeType != EdgeType::FALLING)
             {
-                if (this->edgeType != EdgeType::FALLING)
-                {
-                    hasEdge = true;
-                }
+                hasEdge = true;
             }
-            this->previousValue = newValue;
-            return hasEdge;
-        };
-    } // namespace libEmbedded
-} // namespace gw
+        }
+        this->previousValue = newValue;
+        return hasEdge;
+    }
+    
+    bool EdgeDetector::operator==(const EdgeDetector& other) const
+    {
+        return other.edgeType == this->edgeType && other.previousValue == this->previousValue;
+    }
+
+    bool EdgeDetector::operator!=(const EdgeDetector& other) const
+    {
+        return other.edgeType != this->edgeType || other.previousValue != this->previousValue;
+    }
+} // namespace libEmbedded

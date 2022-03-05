@@ -8,7 +8,7 @@ option(BUILD_TEST "Also build the unit tests for the library." OFF)
 # Actual library target build
 #
 # =========
-set(${PROJECT_NAME}_HEADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/gw/libEmbedded)
+set(${PROJECT_NAME}_HEADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/libEmbedded)
 set(${PROJECT_NAME}_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(${PROJECT_NAME}_HEADERS 
         ${${PROJECT_NAME}_HEADERS_DIR}/Buffer.h
