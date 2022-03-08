@@ -38,6 +38,13 @@ target_compile_features(${PROJECT_NAME}
         cxx_std_11
 )
 
+if (${CMAKE_BUILD_TYPE} STREQUAL "debug")
+    if (${BUILD_TEST})
+        target_compile_options(${PROJECT_NAME} PRIVATE "--coverage")
+        target_link_options(${PROJECT_NAME} PUBLIC "--coverage")
+    endif()
+endif()
+
 # =========
 #
 # Extra additional features/things

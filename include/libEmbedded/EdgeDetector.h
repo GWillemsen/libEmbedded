@@ -86,7 +86,10 @@ namespace libEmbedded
          * 
          * @return The state of the last signal.
          */
-        bool GetState() const;
+        bool GetState() const
+        {
+            return this->previousValue;
+        };
 
         /**
          * @brief Compares the current EdgeDetector to the given one for equality.
