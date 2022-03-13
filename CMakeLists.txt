@@ -14,6 +14,7 @@ set(${PROJECT_NAME}_HEADERS
         ${${PROJECT_NAME}_HEADERS_DIR}/Buffer.h
         ${${PROJECT_NAME}_HEADERS_DIR}/Callback.h
         ${${PROJECT_NAME}_HEADERS_DIR}/EdgeDetector.h
+        ${${PROJECT_NAME}_HEADERS_DIR}/TemplateUtil.h
         )
         
 set(${PROJECT_NAME}_SOURCES

@@ -28,6 +28,7 @@ set(TEST_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(TEST_SRC_FILES
     ${TEST_SRC_DIR}/EdgeDetector.cpp
     ${TEST_SRC_DIR}/Callback.cpp
+    ${TEST_SRC_DIR}/TemplateUtil.cpp
 )
 set(TEST_HEADER_FILES
 )
