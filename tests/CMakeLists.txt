@@ -27,13 +27,18 @@ enable_testing()
 set(TEST_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(TEST_SRC_FILES
     ${TEST_SRC_DIR}/EdgeDetector.cpp
-    ${TEST_SRC_DIR}/Callback.cpp
     ${TEST_SRC_DIR}/TemplateUtil.cpp
+    ${TEST_SRC_DIR}/Callback/CallbackCommon.cpp
+    ${TEST_SRC_DIR}/Callback/NoReturnNoArgs.cpp
+    ${TEST_SRC_DIR}/Callback/NoReturnWithArgs.cpp
+    ${TEST_SRC_DIR}/Callback/WithReturnNoArgs.cpp
+    ${TEST_SRC_DIR}/Callback/WithReturnWithArgs.cpp
 )
 set(TEST_HEADER_FILES
 )
 
 add_executable(tests ${TEST_SRC_FILES} ${TEST_HEADER_FILES})
+target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(tests gtest_main gmock Embedded)
 target_link_options(tests PUBLIC "--coverage")
 target_compile_options(tests PRIVATE "-O0")
@@ -51,7 +56,7 @@ gtest_discover_tests(tests)
 
 add_custom_target(gcov
   DEPENDS tests
-  COMMAND ctest -j 3
+  COMMAND ctest -j 8
   WORKING_DIR ${TESTS_BIN_DIR}
 )
 
