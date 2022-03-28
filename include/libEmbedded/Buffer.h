@@ -4,9 +4,9 @@
  * @brief Implement a buffer of a static size that drops elements the oldest elements once space runs out.
  * @version 0.1
  * @date 2022-02-20
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 #ifndef LIBEMBEDDED_BUFFER_H
 #define LIBEMBEDDED_BUFFER_H
@@ -40,8 +40,15 @@ namespace libEmbedded
          *
          * @param other The buffer to copy from.
          */
-        template<size_t TNumOtherElements>
         Buffer(const Buffer<T, TNumElements> &other);
+
+        /**
+         * @brief Copies the other buffer into this instance.
+         *
+         * @param other The buffer to copy from.
+         */
+        template <size_t TNumOtherElements>
+        Buffer(const Buffer<T, TNumOtherElements> &other);
 
         /**
          * @brief Destroy the buffer.
@@ -124,18 +131,18 @@ namespace libEmbedded
          * @param elements The elements to add to the buffer.
          * @param elementCount The number of elements to add to the buffer.
          */
-        void AddRange(T *elements, size_t elememtCount);
+        void AddRange(const T *elements, size_t elememtCount);
 
         /**
          * @brief Returns the number of elements that are present in the buffer.
-         * 
+         *
          * @return size_t The number of elements in the buffer.
          */
         size_t Size() const;
-        
+
         /**
          * @brief Returns the maximum number of elements that could possibly be in the buffer.
-         * 
+         *
          * @return size_t The maximum number of elements possible in the buffer.
          */
         size_t Capacity() const;
@@ -191,15 +198,28 @@ namespace libEmbedded
     };
 
     template <typename T, size_t TNumElements>
-    template<size_t TNumOtherElements>
     Buffer<T, TNumElements>::Buffer(const Buffer<T, TNumElements> &other)
     {
-        static_assert(TNumElements <= TNumElements, "TNumOtherElements must be of equal size or less than the targets buffer TNumElements.");
         for (size_t i = 0; i < other.elementsUsed; i++)
         {
             T *memory = GetIndexPointer(i);
             new (memory) T(other.GetItem(i));
         }
+        this->elementsUsed = other.elementsUsed;
+    }
+
+    template <typename T, size_t TNumElements>
+    template <size_t TNumOtherElements>
+    Buffer<T, TNumElements>::Buffer(const Buffer<T, TNumOtherElements> &other)
+    {
+        static_assert(TNumOtherElements <= TNumElements, "TNumOtherElements must be of equal size or less than the targets buffer TNumElements.");
+        // Size must be used because of TNumOtherElements we run into Private/Public issues with template instantation.
+        for (size_t i = 0; i < other.Size(); i++)
+        {
+            T *memory = GetIndexPointer(i);
+            new (memory) T(other.GetItem(i));
+        }
+        this->elementsUsed = other.Size();
     }
 
     template <typename T, size_t TNumElements>
@@ -264,7 +284,7 @@ namespace libEmbedded
         {
             memcpy(this->GetIndexPointer(0), this->GetConstIndexPointer(removeCount), (this->Size() - removeCount) * sizeof(T));
             iterator newEnd = this->GetIndexPointer(this->Size() + 1);
-            memset(newEnd, 0, (TNumElements - this->Size()) * sizeof(T)); 
+            memset(newEnd, 0, (TNumElements - this->Size()) * sizeof(T));
             this->elementsUsed -= removeCount;
         }
     }
@@ -282,9 +302,9 @@ namespace libEmbedded
     }
 
     template <typename T, size_t TNumElements>
-    void Buffer<T, TNumElements>::AddRange(T *elements, size_t elementCount)
+    void Buffer<T, TNumElements>::AddRange(const T *elements, size_t elementCount)
     {
-        T* start = elements;
+        const T *start = elements;
         size_t count = elementCount;
         if (elementCount > this->Capacity())
         {
@@ -297,7 +317,7 @@ namespace libEmbedded
             size_t toRemove = count - (this->Capacity() - this->Size());
             this->Remove(toRemove);
         }
-        for(size_t i = 0; i < count; i++)
+        for (size_t i = 0; i < count; i++)
         {
             new (GetIndexPointer(Size())) T(start[i]);
             this->elementsUsed++;
@@ -309,7 +329,7 @@ namespace libEmbedded
     {
         return this->elementsUsed;
     }
-    
+
     template <typename T, size_t TNumElements>
     size_t Buffer<T, TNumElements>::Capacity() const
     {
@@ -319,11 +339,9 @@ namespace libEmbedded
     template <typename T, size_t TNumElements>
     Buffer<T, TNumElements> &Buffer<T, TNumElements>::operator=(const Buffer<T, TNumElements> &other)
     {
-        for (size_t i = 0; i < other.elementsUsed; i++)
-        {
-            new (this->GetIndexPointer()) T(other[i]);
-        }
-        this->elementsUsed = other.elementsUsed;
+        this->Remove(this->elementsUsed);
+        this->AddRange(other.GetConstIndexPointer(0), other.elementsUsed);
+        return *this;
     }
 
     template <typename T, size_t TNumElements>
