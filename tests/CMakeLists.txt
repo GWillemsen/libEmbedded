@@ -34,6 +34,7 @@ set(TEST_SRC_FILES
   ${TEST_SRC_DIR}/Callback/WithReturnNoArgs.cpp
   ${TEST_SRC_DIR}/Callback/WithReturnWithArgs.cpp
   ${TEST_SRC_DIR}/Buffer/Operations.cpp
+  ${TEST_SRC_DIR}/Buffer/Iterators.cpp
 )
 set(TEST_HEADER_FILES
   ${TEST_SRC_DIR}/CallbackHelper.h
