@@ -46,18 +46,6 @@ TEST_F(BufferOperations, PushMoreThanSize)
     ASSERT_EQ(kValue7, this->buffer.GetItem(4));
 }
 
-TEST_F(BufferOperations, GetItemOnConstBuffer)
-{
-    constexpr T kValue1 = 10;
-    constexpr T kValue2 = 10;
-    const BufferT& cBuffer = this->buffer;
-
-    this->buffer.Add(kValue1);
-    this->buffer.Add(kValue2);
-    ASSERT_EQ(kValue1, cBuffer.GetItem(0));
-    ASSERT_EQ(kValue2, cBuffer.GetItem(1));
-}
-
 TEST_F(BufferOperations, RemoveFromEmptyBuffer)
 {
     EXPECT_EQ(0, this->buffer.Size());
