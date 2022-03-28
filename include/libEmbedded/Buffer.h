@@ -126,6 +126,20 @@ namespace libEmbedded
          */
         void AddRange(T *elements, size_t elememtCount);
 
+        /**
+         * @brief Returns the number of elements that are present in the buffer.
+         * 
+         * @return size_t The number of elements in the buffer.
+         */
+        size_t Size() const;
+        
+        /**
+         * @brief Returns the maximum number of elements that could possibly be in the buffer.
+         * 
+         * @return size_t The maximum number of elements possible in the buffer.
+         */
+        size_t Capacity() const;
+
         Buffer<T, TNumElements> &operator=(const Buffer<T, TNumElements> &other);
 
         /**
@@ -198,49 +212,109 @@ namespace libEmbedded
     }
 
     template <typename T, size_t TNumElements>
-    Buffer<T, TNumElements>::iterator Buffer<T, TNumElements>::begin()
+    typename Buffer<T, TNumElements>::iterator Buffer<T, TNumElements>::begin()
     {
         return this->GetIndexPointer(0);
     }
 
     template <typename T, size_t TNumElements>
-    Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::begin() const
+    typename Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::begin() const
     {
         return this->GetConstIndexPointer(0);
     }
 
     template <typename T, size_t TNumElements>
-    Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::cbegin() const
+    typename Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::cbegin() const
     {
         return this->GetConstIndexPointer(0);
     }
 
     template <typename T, size_t TNumElements>
-    Buffer<T, TNumElements>::iterator Buffer<T, TNumElements>::end()
+    typename Buffer<T, TNumElements>::iterator Buffer<T, TNumElements>::end()
     {
         return this->GetIndexPointer(this->elementsUsed);
     }
 
     template <typename T, size_t TNumElements>
-    Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::end() const
+    typename Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::end() const
     {
         return this->GetConstIndexPointer(this->elementsUsed);
     }
 
     template <typename T, size_t TNumElements>
-    Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::cend() const
+    typename Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::cend() const
     {
         return this->GetConstIndexPointer(this->elementsUsed);
     }
 
     template <typename T, size_t TNumElements>
-    void Buffer<T, TNumElements>::Remove(size_t count);
+    void Buffer<T, TNumElements>::Remove(size_t count)
+    {
+        size_t removeCount = count;
+        if (removeCount > this->Size())
+        {
+            removeCount = this->Size();
+        }
+        if (removeCount == this->Size())
+        {
+            memset(this->GetIndexPointer(0), 0, TNumElements * sizeof(T));
+            this->elementsUsed = 0;
+        }
+        else
+        {
+            memcpy(this->GetIndexPointer(0), this->GetConstIndexPointer(removeCount), (this->Size() - removeCount) * sizeof(T));
+            iterator newEnd = this->GetIndexPointer(this->Size() + 1);
+            memset(newEnd, 0, (TNumElements - this->Size()) * sizeof(T)); 
+            this->elementsUsed -= removeCount;
+        }
+    }
 
     template <typename T, size_t TNumElements>
-    void Buffer<T, TNumElements>::Add(const T &element);
+    void Buffer<T, TNumElements>::Add(const T &element)
+    {
+        if (this->Size() == this->Capacity())
+        {
+            this->Remove(1);
+        }
+        iterator location = this->GetIndexPointer(this->Size());
+        new (location) T(element);
+        this->elementsUsed++;
+    }
 
     template <typename T, size_t TNumElements>
-    void Buffer<T, TNumElements>::AddRange(T *elements, size_t elementCount);
+    void Buffer<T, TNumElements>::AddRange(T *elements, size_t elementCount)
+    {
+        T* start = elements;
+        size_t count = elementCount;
+        if (elementCount > this->Capacity())
+        {
+            size_t diff = elementCount - this->Capacity();
+            start += diff;
+            count -= diff;
+        }
+        if (count > this->Capacity() - this->Size())
+        {
+            size_t toRemove = count - (this->Capacity() - this->Size());
+            this->Remove(toRemove);
+        }
+        for(size_t i = 0; i < count; i++)
+        {
+            new (GetIndexPointer(Size())) T(start[i]);
+            this->elementsUsed++;
+        }
+    }
+
+    template <typename T, size_t TNumElements>
+    size_t Buffer<T, TNumElements>::Size() const
+    {
+        return this->elementsUsed;
+    }
+    
+    template <typename T, size_t TNumElements>
+    size_t Buffer<T, TNumElements>::Capacity() const
+    {
+        return TNumElements;
+    }
 
     template <typename T, size_t TNumElements>
     Buffer<T, TNumElements> &Buffer<T, TNumElements>::operator=(const Buffer<T, TNumElements> &other)
@@ -317,15 +391,15 @@ namespace libEmbedded
     }
 
     template <typename T, size_t TNumElements>
-    Buffer<T, TNumElements>::iterator Buffer<T, TNumElements>::GetIndexPointer(size_t index)
+    typename Buffer<T, TNumElements>::iterator Buffer<T, TNumElements>::GetIndexPointer(size_t index)
     {
-        return this->workspace + (index * sizeof(T));
+        return ((iterator)this->workspace) + index;
     }
 
     template <typename T, size_t TNumElements>
-    Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::GetConstIndexPointer(size_t index) const
+    typename Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::GetConstIndexPointer(size_t index) const
     {
-        return this->workspace + (index * sizeof(T));
+        return ((const_iterator)this->workspace) + index;
     }
 } // namespace libEmbedded
 

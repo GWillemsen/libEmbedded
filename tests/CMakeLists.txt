@@ -26,15 +26,17 @@ enable_testing()
 
 set(TEST_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(TEST_SRC_FILES
-    ${TEST_SRC_DIR}/EdgeDetector.cpp
-    ${TEST_SRC_DIR}/TemplateUtil.cpp
-    ${TEST_SRC_DIR}/Callback/CallbackCommon.cpp
-    ${TEST_SRC_DIR}/Callback/NoReturnNoArgs.cpp
-    ${TEST_SRC_DIR}/Callback/NoReturnWithArgs.cpp
-    ${TEST_SRC_DIR}/Callback/WithReturnNoArgs.cpp
-    ${TEST_SRC_DIR}/Callback/WithReturnWithArgs.cpp
+  ${TEST_SRC_DIR}/EdgeDetector.cpp
+  ${TEST_SRC_DIR}/TemplateUtil.cpp
+  ${TEST_SRC_DIR}/Callback/CallbackCommon.cpp
+  ${TEST_SRC_DIR}/Callback/NoReturnNoArgs.cpp
+  ${TEST_SRC_DIR}/Callback/NoReturnWithArgs.cpp
+  ${TEST_SRC_DIR}/Callback/WithReturnNoArgs.cpp
+  ${TEST_SRC_DIR}/Callback/WithReturnWithArgs.cpp
+  ${TEST_SRC_DIR}/Buffer/Operations.cpp
 )
 set(TEST_HEADER_FILES
+  ${TEST_SRC_DIR}/CallbackHelper.h
 )
 
 add_executable(tests ${TEST_SRC_FILES} ${TEST_HEADER_FILES})

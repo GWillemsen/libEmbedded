@@ -39,6 +39,10 @@ target_compile_features(${PROJECT_NAME}
         cxx_std_11
 )
 
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "debug")
+endif()
+
 if (${CMAKE_BUILD_TYPE} STREQUAL "debug")
     if (${BUILD_TEST})
         target_compile_options(${PROJECT_NAME} PRIVATE "--coverage")
