@@ -37,6 +37,7 @@ set(TEST_SRC_FILES
   ${TEST_SRC_DIR}/Buffer/Retrieval.cpp
   ${TEST_SRC_DIR}/Buffer/Iterators.cpp
   ${TEST_SRC_DIR}/Buffer/AssignmentConstructor.cpp
+  ${TEST_SRC_DIR}/Buffer/Comparison.cpp
 )
 set(TEST_HEADER_FILES
   ${TEST_SRC_DIR}/CallbackHelper.h

@@ -372,7 +372,7 @@ namespace libEmbedded
     template <size_t TOtherNumElements>
     bool Buffer<T, TNumElements>::operator==(const Buffer<T, TOtherNumElements> &other) const
     {
-        if (this->elementsmi0Used != other.elementsUsed)
+        if (this->Size() != other.Size())
         {
             return false;
         }
@@ -390,15 +390,15 @@ namespace libEmbedded
     template <size_t TOtherNumElements>
     bool Buffer<T, TNumElements>::operator!=(const Buffer<T, TOtherNumElements> &other) const
     {
-        if (this->elementsUsed != other.elementsUsed)
+        if (this->Size() != other.Size())
         {
             return true;
         }
 
         bool allmatch = true;
-        for (size_t i = 0; i < other.elementsUsed; i++)
+        for (size_t i = 0; i < other.Size(); i++)
         {
-            if (other.GetItem(i) != other)
+            if (this->GetItem(i) != other.GetItem(i))
             {
                 allmatch = false;
                 break;
