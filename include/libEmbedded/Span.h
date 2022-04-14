@@ -3,7 +3,8 @@
  * @author Giel Willemsen
  * @brief A simple 'wrapper' around a section of memory. Basically a iterator with a end but without specifying backing storage.
  * @version 0.1 2022-03-31 Initial version
- * @date 2022-03-31
+ * @version 0.2 2022-04-02 Resolved issue with const T* not having constructor params as const_iterator, just iterator.
+ * @date 2022-04-02
  *
  * @copyright Copyright (c) 2022
  *
@@ -139,7 +140,7 @@ namespace libEmbedded
          * @param start The starting point of the span.
          * @param end The end point of the span.
          */
-        constexpr Span(iterator start, iterator end) : spanStart(start), spanEnd(end){};
+        constexpr Span(const_iterator start, const_iterator end) : spanStart(start), spanEnd(end){};
 
         /**
          * @brief Construct a new span with the given start and length to end.
@@ -147,7 +148,7 @@ namespace libEmbedded
          * @param start The starting point of the span.
          * @param length The number of elements in the span.
          */
-        Span(iterator start, size_t length) : spanStart(start), spanEnd(start + length) {}
+        Span(const_iterator start, size_t length) : spanStart(start), spanEnd(start + length) {}
 
         /**
          * @brief Retrieve a readonly iterator to the start of the span.
