@@ -10,29 +10,28 @@ constexpr size_t kArraySize = 5;
 class SpanFixture : public ::testing::Test
 {
 protected:
-    using SpanT = Span<uint8_t, uint8_t*>;
-    std::array<uint8_t, kArraySize> array {0, 1, 100, 90, UINT8_MAX};
+    using SpanT = Span<uint8_t, uint8_t *>;
+    std::array<uint8_t, kArraySize> array{0, 1, 100, 90, UINT8_MAX};
 };
 
-template<typename T, typename K>
+template <typename T, typename K>
 struct TemplateHelper
 {
     using Type = T;
     using Span = K;
 };
 
-template<typename T>
+template <typename T>
 class SpanTFixture : public ::testing::Test
 {
 protected:
     using SpanT = typename T::Span;
-    std::array<typename T::Type, kArraySize> array {0, 1, 100, 90, UINT8_MAX};
+    std::array<typename T::Type, kArraySize> array{0, 1, 100, 90, UINT8_MAX};
 };
 
 using TestTypes = ::testing::Types<
-    TemplateHelper<uint8_t, Span<uint8_t, uint8_t*, const uint8_t*>>,
-    TemplateHelper<const uint8_t, Span<const uint8_t, const uint8_t*>>
->;
+    TemplateHelper<uint8_t, Span<uint8_t, uint8_t *, const uint8_t *>>,
+    TemplateHelper<const uint8_t, Span<const uint8_t, const uint8_t *>>>;
 
 TYPED_TEST_SUITE(SpanTFixture, TestTypes);
 
@@ -140,6 +139,20 @@ TEST_F(SpanFixture, ReverseStartEndIteratorOverRegularME)
     it -= 1;
     ASSERT_EQ(span.begin(), it);
     EXPECT_EQ(this->array[0], *it);
+}
+
+TEST_F(SpanFixture, AssignValueUsingIndexOperator)
+{
+    SpanT span(this->array.data(), kArraySize);
+    span[0] = 1;
+    span[1] = 2;
+    span[2] = 3;
+
+    ASSERT_EQ(1, span[0]);
+    ASSERT_EQ(2, span[1]);
+    ASSERT_EQ(3, span[2]);
+    ASSERT_EQ(90, span[3]);
+    ASSERT_EQ(UINT8_MAX, span[4]);
 }
 
 TYPED_TEST(SpanTFixture, SpanStartEndConstSpanIteratorOverRegularPP)
@@ -312,4 +325,25 @@ TYPED_TEST(SpanTFixture, ReverseStartEndConstCallIteratorOverRegularME)
     it -= 1;
     ASSERT_EQ(span.cbegin(), it);
     EXPECT_EQ(this->array[0], *it);
+}
+
+TYPED_TEST(SpanTFixture, RetrieveItemAtIndexUsingIndexOperator)
+{
+    const typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), this->array.data() + kArraySize);
+    ASSERT_EQ(0, span[0]);
+    ASSERT_EQ(1, span[1]);
+    ASSERT_EQ(100, span[2]);
+    ASSERT_EQ(90, span[3]);
+    ASSERT_EQ(UINT8_MAX, span[4]);
+}
+
+TYPED_TEST(SpanTFixture, RetrieveFromChaningSubstorage)
+{
+    constexpr size_t kBufferSize = 5;
+    uint8_t buffer[kBufferSize] = { 0, 1, 2, 3, 4 };
+    typename SpanTFixture<TypeParam>::SpanT span((typename TypeParam::Type*)buffer, (typename TypeParam::Type*)(buffer + kBufferSize));
+
+    ASSERT_EQ(3, span[3]);
+    buffer[3] = 40;
+    ASSERT_EQ(40, span[3]);
 }

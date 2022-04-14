@@ -4,7 +4,8 @@
  * @brief A simple 'wrapper' around a section of memory. Basically a iterator with a end but without specifying backing storage.
  * @version 0.1 2022-03-31 Initial version
  * @version 0.2 2022-04-02 Resolved issue with const T* not having constructor params as const_iterator, just iterator.
- * @date 2022-04-02
+ * @version 0.2 2022-04-14 Addition of index operators
+ * @date 2022-04-14
  *
  * @copyright Copyright (c) 2022
  *
@@ -112,6 +113,28 @@ namespace libEmbedded
         {
             return spanEnd;
         }
+
+        /**
+         * @brief Retrieve the item at the given index. Does not do any bounds checks!
+         * 
+         * @param index The index to retrieve the item from.
+         * @return const T& A readonly reference to the item at the given index.
+         */
+        const T& operator[](size_t index) const
+        {
+            return *(spanStart + index);
+        }
+
+        /**
+         * @brief Retrieve the item at the given index. Does not do any bounds checks!
+         * 
+         * @param index The index to retrieve the item from.
+         * @return const T& A readonly reference to the item at the given index.
+         */
+        T& operator[](size_t index)
+        {
+            return *(spanStart + index);
+        }
     };
 
     /**
@@ -188,6 +211,17 @@ namespace libEmbedded
         const_iterator cend() const
         {
             return spanEnd;
+        }
+
+        /**
+         * @brief Retrieve the item at the given index. Does not do any bounds checks!
+         * 
+         * @param index The index to retrieve the item from.
+         * @return const T& A readonly reference to the item at the given index.
+         */
+        const T& operator[](size_t index) const
+        {
+            return *(spanStart + index);
         }
     };
 } // namespace libEmbedded
