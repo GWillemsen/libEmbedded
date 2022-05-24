@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(Embedded CXX)
 
-option(BUILD_TEST "Also build the unit tests for the library." OFF)
+option(BUILD_TEST "Also build the unit tests for the library." ON)
 
 # =========
 #
@@ -16,10 +16,13 @@ set(${PROJECT_NAME}_HEADERS
         ${${PROJECT_NAME}_HEADERS_DIR}/EdgeDetector.h
         ${${PROJECT_NAME}_HEADERS_DIR}/TemplateUtil.h
         ${${PROJECT_NAME}_HEADERS_DIR}/Span.h
+        ${${PROJECT_NAME}_HEADERS_DIR}/Helpers.h
+        ${${PROJECT_NAME}_HEADERS_DIR}/Bits/Helpers.h
         )
         
 set(${PROJECT_NAME}_SOURCES
     ${${PROJECT_NAME}_SOURCE_DIR}/EdgeDetector.cpp
+    ${${PROJECT_NAME}_SOURCE_DIR}/bits/Helpers.cpp
 )
 
 add_library(${PROJECT_NAME}
