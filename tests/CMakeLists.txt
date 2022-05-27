@@ -39,7 +39,7 @@ set(TEST_SRC_FILES
   ${TEST_SRC_DIR}/Buffer/Iterators.cpp
   ${TEST_SRC_DIR}/Buffer/AssignmentConstructor.cpp
   ${TEST_SRC_DIR}/Buffer/Comparison.cpp
-  ${TEST_SRC_DIR}/Bits/Helpers.cpp
+  ${TEST_SRC_DIR}/Bits/Helpers/MoveWithOffset.cpp
 )
 set(TEST_HEADER_FILES
   ${TEST_SRC_DIR}/CallbackHelper.h
