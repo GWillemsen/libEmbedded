@@ -27,7 +27,7 @@ namespace libEmbedded
                 const size_t leftInDestination = kMaxBitSize - destinationOffset;
                 const size_t leftInSource = kMaxBitSize - sourceOffset;
                 const size_t maxBitCopy = leftInSource < leftInDestination ? leftInSource : leftInDestination;
-                const data_t fromDestination = *destination & ~CreateMask<data_t>(destinationOffset);
+                const data_t fromDestination = *destination & CreateMask<data_t>(destinationOffset);
                 const data_t fromSource = ((*source) >> sourceOffset) & CreateMask<data_t>(maxBitCopy);
                 *destination = fromDestination | (fromSource << destinationOffset);
                 destinationOffset += maxBitCopy;
