@@ -21,7 +21,6 @@ set(${PROJECT_NAME}_HEADERS
         
 set(${PROJECT_NAME}_SOURCES
     ${${PROJECT_NAME}_SOURCE_DIR}/EdgeDetector.cpp
-    ${${PROJECT_NAME}_SOURCE_DIR}/bits/Helpers.cpp
 )
 
 add_library(${PROJECT_NAME}
