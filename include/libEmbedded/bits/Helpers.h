@@ -4,7 +4,9 @@
  * @brief Some helper functions for manipulating bits.
  * @version 0.1 2022-05-22 Initial version
  * @version 0.2 2022-05-27 Added GetBitSize helper.
- * @date 2022-05-27
+ * @version 0.3 2022-05-28 Added ExtractBits helper.
+ * @version 0.4 2022-05-28 Added GetCombinedValue & CombineBitValues helper.
+ * @date 2022-05-28
  *
  * @copyright Copyright (c) 2022
  *
@@ -20,6 +22,13 @@ namespace libEmbedded
 {
     namespace bits
     {
+        /**
+         * @brief Create a mask of bitLength bits for type T.
+         * 
+         * @tparam T The type to create the mask in.
+         * @param bitLength The number of bits that are set starting at position 0.
+         * @return T The resulting mask.
+         */
         template<typename T = int>
         constexpr T CreateMask(size_t bitLength)
         {
@@ -146,13 +155,6 @@ namespace libEmbedded
             const size_t kBitsFrom2         = kBitsLeftAfterVal1 > kBitsInT2 ? kBitsInT2 : kBitsLeftAfterVal1;
             return CombineBitValues<T1, T2, T3>(value1, value2, kBitsOffsetValue1, kBitsIn1, kBitsOffsetValue2, kBitsFrom2);
         }
-        
-        /**
-         * @brief Copies bitCount nr of bits from source to destination with the given bit offsets without any internal buffering. 
-         * Overlapping is allowed (destination and source can be the same with different offsets).
-         * 
-         */
-        void MoveWithOffset(void* destination, size_t destinationBitOffset, void* source, size_t sourceBitOffset, size_t bitCount);
     } // namespace bits
 } // namespace libEmbedded
 
