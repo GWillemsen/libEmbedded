@@ -16,7 +16,8 @@ set(${PROJECT_NAME}_HEADERS
         ${${PROJECT_NAME}_HEADERS_DIR}/EdgeDetector.h
         ${${PROJECT_NAME}_HEADERS_DIR}/TemplateUtil.h
         ${${PROJECT_NAME}_HEADERS_DIR}/Span.h
-        )
+        ${${PROJECT_NAME}_HEADERS_DIR}/bits/Helpers.h
+)
         
 set(${PROJECT_NAME}_SOURCES
     ${${PROJECT_NAME}_SOURCE_DIR}/EdgeDetector.cpp
