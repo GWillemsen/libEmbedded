@@ -155,6 +155,13 @@ namespace libEmbedded
             const size_t kBitsFrom2         = kBitsLeftAfterVal1 > kBitsInT2 ? kBitsInT2 : kBitsLeftAfterVal1;
             return CombineBitValues<T1, T2, T3>(value1, value2, kBitsOffsetValue1, kBitsIn1, kBitsOffsetValue2, kBitsFrom2);
         }
+        
+        /**
+         * @brief Copies bitCount nr of bits from source to destination with the given bit offsets without any internal buffering. 
+         * Overlapping is allowed (destination and source can be the same with different offsets).
+         * 
+         */
+        void MoveWithOffset(void* destination, size_t destinationBitOffset, void* source, size_t sourceBitOffset, size_t bitCount);
     } // namespace bits
 } // namespace libEmbedded
 
