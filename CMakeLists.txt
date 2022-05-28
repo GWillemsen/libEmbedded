@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(Embedded CXX)
 
-option(BUILD_TEST "Also build the unit tests for the library." ON)
+option(BUILD_TEST "Also build the unit tests for the library." OFF)
 
 # =========
 #
