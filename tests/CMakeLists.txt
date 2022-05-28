@@ -40,6 +40,7 @@ set(TEST_SRC_FILES
   ${TEST_SRC_DIR}/Buffer/AssignmentConstructor.cpp
   ${TEST_SRC_DIR}/Buffer/Comparison.cpp
   ${TEST_SRC_DIR}/Bits/Helpers/Helpers.cpp
+  ${TEST_SRC_DIR}/Bits/Helpers/BitCombinerHelpers.cpp
   ${TEST_SRC_DIR}/Bits/Helpers/MoveWithOffset.cpp
 )
 set(TEST_HEADER_FILES
