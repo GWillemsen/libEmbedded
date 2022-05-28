@@ -4,7 +4,9 @@
  * @brief Some helper functions for manipulating bits.
  * @version 0.1 2022-05-22 Initial version
  * @version 0.2 2022-05-27 Added GetBitSize helper.
- * @date 2022-05-27
+ * @version 0.3 2022-05-28 Added ExtractBits helper.
+ * @version 0.4 2022-05-28 Added GetCombinedValue & CombineBitValues helper.
+ * @date 2022-05-28
  *
  * @copyright Copyright (c) 2022
  *
@@ -20,6 +22,13 @@ namespace libEmbedded
 {
     namespace bits
     {
+        /**
+         * @brief Create a mask of bitLength bits for type T.
+         * 
+         * @tparam T The type to create the mask in.
+         * @param bitLength The number of bits that are set starting at position 0.
+         * @return T The resulting mask.
+         */
         template<typename T = int>
         constexpr T CreateMask(size_t bitLength)
         {
