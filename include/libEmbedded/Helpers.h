@@ -4,7 +4,8 @@
  * @brief Some helper functions that don't really have a place but are really handy.
  * @version 0.1 2022-05-22 Initial version
  * @version 0.2 2022-05-28 Cleanup and fixed negative rounding problem.
- * @date 2022-05-22
+ * @version 0.3 2022-05-29 Removed dependency on math.h abs function.
+ * @date 2022-05-29
  *
  * @copyright Copyright (c) 2022
  *
@@ -34,7 +35,7 @@ namespace libEmbedded
         const TResult wholeValue = (v / d);
         const TResult wholeValueD = wholeValue * d;
         const TResult leftOverValue = v - wholeValueD;
-        TResult partValue = abs(leftOverValue) > 0 ? 1 : 0;
+        TResult partValue = leftOverValue > 0 ? 1 : (leftOverValue < 0 ? 1 : 0);
         if (((value < 0 && divider > 0) || (value > 0 && divider < 0)))
         {
             if (wholeValue <= 0)
