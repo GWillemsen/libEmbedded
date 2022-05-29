@@ -29,6 +29,7 @@ set(TEST_SRC_FILES
   ${TEST_SRC_DIR}/EdgeDetector.cpp
   ${TEST_SRC_DIR}/TemplateUtil.cpp
   ${TEST_SRC_DIR}/Span.cpp
+  ${TEST_SRC_DIR}/Helpers.cpp
   ${TEST_SRC_DIR}/Callback/CallbackCommon.cpp
   ${TEST_SRC_DIR}/Callback/NoReturnNoArgs.cpp
   ${TEST_SRC_DIR}/Callback/NoReturnWithArgs.cpp
