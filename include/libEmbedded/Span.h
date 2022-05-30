@@ -4,8 +4,9 @@
  * @brief A simple 'wrapper' around a section of memory. Basically a iterator with a end but without specifying backing storage.
  * @version 0.1 2022-03-31 Initial version
  * @version 0.2 2022-04-02 Resolved issue with const T* not having constructor params as const_iterator, just iterator.
- * @version 0.2 2022-04-14 Addition of index operators
- * @date 2022-04-14
+ * @version 0.3 2022-04-14 Addition of index operators.
+ * @version 0.4 2022-05-30 Added missing stddef.h include for size_t.
+ * @date 2022-05-30
  *
  * @copyright Copyright (c) 2022
  *
@@ -13,6 +14,8 @@
 
 #ifndef LIBEMBEDDED_SPAN_H
 #define LIBEMBEDDED_SPAN_H
+
+#include <stddef.h>
 
 namespace libEmbedded
 {
