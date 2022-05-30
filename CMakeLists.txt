@@ -42,6 +42,8 @@ target_compile_features(${PROJECT_NAME}
         cxx_std_11
 )
 
+include(GNUInstallDirs )
+
 install(TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
