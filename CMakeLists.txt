@@ -45,7 +45,6 @@ target_compile_features(${PROJECT_NAME}
         cxx_std_11
 )
 
-
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "debug")
 endif()
