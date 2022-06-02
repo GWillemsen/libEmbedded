@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(Embedded CXX)
 
-option(BUILD_TEST "Also build the unit tests for the library." OFF)
+option(BUILD_LIBEMBEDDED_TEST "Also build the unit tests for the library." OFF)
 
 # =========
 #
@@ -63,6 +63,6 @@ endif()
 #
 # =========
 
-if (${BUILD_TEST})
+if (${BUILD_LIBEMBEDDED_TEST})
     add_subdirectory(tests)
 endif()
