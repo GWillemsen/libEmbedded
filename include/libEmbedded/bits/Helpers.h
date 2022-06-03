@@ -155,6 +155,34 @@ namespace libEmbedded
             const size_t kBitsFrom2         = kBitsLeftAfterVal1 > kBitsInT2 ? kBitsInT2 : kBitsLeftAfterVal1;
             return CombineBitValues<T1, T2, T3>(value1, value2, kBitsOffsetValue1, kBitsIn1, kBitsOffsetValue2, kBitsFrom2);
         }
+
+        /**
+         * @brief Create a value with the bit at the given position set.
+         * 
+         * @tparam T The type to create the mask in.
+         * @param TPosition The position of the bit to set.
+         * @return constexpr T The resulting value with the bit at position set.
+         */
+        template<typename T, size_t TPosition>
+        constexpr T CreateFlagSet()
+        {
+            return ((T)1 << TPosition);
+        }
+
+        /**
+         * @brief Create a value with the bit at the given positions set.
+         * 
+         * @tparam T The type to create the mask in.
+         * @tparam TPosition1 Position of the first bit position 1 to set.
+         * @tparam TPosition2 Position of the second bit 2 to set.
+         * @tparam TPositions The other positions to also set.
+         * @return constexpr T The resulting value with the bit at position set.
+         */
+        template<typename T, size_t TPosition1, size_t TPosition2, size_t... TPositions>
+        constexpr T CreateFlagSet()
+        {
+            return CreateFlagSet<T, TPosition1>() | CreateFlagSet<T, TPosition2, TPositions...>();
+        }
     } // namespace bits
 } // namespace libEmbedded
 
