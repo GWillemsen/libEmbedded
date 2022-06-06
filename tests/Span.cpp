@@ -31,7 +31,7 @@ protected:
 
 using TestTypes = ::testing::Types<
     TemplateHelper<uint8_t, Span<uint8_t, uint8_t *, const uint8_t *>>,
-    TemplateHelper<const uint8_t, Span<const uint8_t, const uint8_t *>>>;
+    TemplateHelper<const uint8_t, Span<const uint8_t, uint8_t *>>>;
 
 TYPED_TEST_SUITE(SpanTFixture, TestTypes);
 
@@ -155,50 +155,98 @@ TEST_F(SpanFixture, AssignValueUsingIndexOperator)
     ASSERT_EQ(UINT8_MAX, span[4]);
 }
 
-TEST_F(SpanFixture, SpanEqualCopyConstructorCopy)
+TYPED_TEST(SpanTFixture, SpanEqualCopyConstructorCopy)
 {
-    SpanT span(this->array.data(), kArraySize);
-    SpanT span2 = SpanT(span);
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    typename SpanTFixture<TypeParam>::SpanT span2 = typename SpanTFixture<TypeParam>::SpanT(span);
     EXPECT_TRUE(span == span2);
     EXPECT_FALSE(span != span2);
 }
 
-TEST_F(SpanFixture, SpanEqualAssignCopy)
+TYPED_TEST(SpanTFixture, SpanEqualAssignCopy)
 {
-    SpanT span(this->array.data(), kArraySize);
-    SpanT span2 = span;
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    typename SpanTFixture<TypeParam>::SpanT span2 = span;
     EXPECT_TRUE(span == span2);
     EXPECT_FALSE(span != span2);
 }
 
-TEST_F(SpanFixture, SpanEqualSpanToSameArray)
+TYPED_TEST(SpanTFixture, SpanEqualSpanToSameArray)
 {
-    SpanT span(this->array.data(), kArraySize);
-    SpanT span2(this->array.data(), kArraySize);
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    typename SpanTFixture<TypeParam>::SpanT span2(this->array.data(), kArraySize);
     EXPECT_TRUE(span == span2);
     EXPECT_FALSE(span != span2);
 }
 
-TEST_F(SpanFixture, SpanEqualSpanToSameStartDifferentEnd)
+TYPED_TEST(SpanTFixture, SpanEqualSpanToSameStartDifferentEnd)
 {
-    SpanT span(this->array.data(), kArraySize);
-    SpanT span2(this->array.data(), kArraySize - 1);
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    typename SpanTFixture<TypeParam>::SpanT span2(this->array.data(), kArraySize - 1);
     EXPECT_FALSE(span == span2);
     EXPECT_TRUE(span != span2);
 }
 
-TEST_F(SpanFixture, SpanEqualSpanToDifferentStartSameEnd)
+TYPED_TEST(SpanTFixture, SpanEqualSpanToDifferentStartSameEnd)
 {
-    SpanT span(this->array.data(), kArraySize);
-    SpanT span2(this->array.data() + 1, kArraySize - 1);
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    typename SpanTFixture<TypeParam>::SpanT span2(this->array.data() + 1, kArraySize - 1);
     EXPECT_FALSE(span == span2);
     EXPECT_TRUE(span != span2);
 }
 
-TEST_F(SpanFixture, SpanEqualSpanToDifferentStartDifferentEnd)
+TYPED_TEST(SpanTFixture, SpanEqualSpanToDifferentStartDifferentEnd)
 {
-    SpanT span(this->array.data(), kArraySize);
-    SpanT span2(this->array.data() + 1, kArraySize - 2);
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    typename SpanTFixture<TypeParam>::SpanT span2(this->array.data() + 1, kArraySize - 2);
+    EXPECT_FALSE(span == span2);
+    EXPECT_TRUE(span != span2);
+}
+
+TYPED_TEST(SpanTFixture, SpanEqualConstCopyConstructorCopy)
+{
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    Span<const uint8_t, uint8_t *> span2 = Span<const uint8_t, uint8_t *>(span);
+    EXPECT_TRUE(span == span2);
+    EXPECT_FALSE(span != span2);
+}
+
+TYPED_TEST(SpanTFixture, SpanEqualConstAssignCopy)
+{
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    Span<const uint8_t, uint8_t *> span2 = Span<const uint8_t, uint8_t *>(span.begin(), span.end());
+    EXPECT_TRUE(span == span2);
+    EXPECT_FALSE(span != span2);
+}
+
+TYPED_TEST(SpanTFixture, SpanEqualConstSpanToSameArray)
+{
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    Span<const uint8_t, uint8_t *> span2(this->array.data(), kArraySize);
+    EXPECT_TRUE(span == span2);
+    EXPECT_FALSE(span != span2);
+}
+
+TYPED_TEST(SpanTFixture, SpanEqualConstSpanToSameStartDifferentEnd)
+{
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    Span<const uint8_t, uint8_t *> span2(this->array.data(), kArraySize - 1);
+    EXPECT_FALSE(span == span2);
+    EXPECT_TRUE(span != span2);
+}
+
+TYPED_TEST(SpanTFixture, SpanEqualConstSpanToDifferentStartSameEnd)
+{
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    Span<const uint8_t, uint8_t *> span2(this->array.data() + 1, kArraySize - 1);
+    EXPECT_FALSE(span == span2);
+    EXPECT_TRUE(span != span2);
+}
+
+TYPED_TEST(SpanTFixture, SpanEqualConstSpanToDifferentStartDifferentEnd)
+{
+    typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), kArraySize);
+    Span<const uint8_t, uint8_t *> span2(this->array.data() + 1, kArraySize - 2);
     EXPECT_FALSE(span == span2);
     EXPECT_TRUE(span != span2);
 }

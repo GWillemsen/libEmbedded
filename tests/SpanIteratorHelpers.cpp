@@ -73,6 +73,12 @@ TYPED_TEST(SpanIteratorFixture, RetrieveDistanceFromBeginToEndMin5)
     ASSERT_EQ(kItemCount - 5, libEmbedded::Distance(list.begin(), std::prev(list.end(), 5)));
 }
 
+TYPED_TEST(SpanIteratorFixture, RetrieveDistanceFromContainer)
+{
+    TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);
+    ASSERT_EQ(kItemCount, libEmbedded::Distance(list));
+}
+
 TYPED_TEST(SpanIteratorFixture, AdvanceBeginningToEnd)
 {
     TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);

@@ -10,6 +10,7 @@
  * @version 0.6 2022-06-06 Moved DistanceApart to namespace as Distance and added a Advance.
  * @version 0.7 2022-06-06 Addition of equality check operators for Span.
  * @version 0.8 2022-06-06 Addition of shorthand function to get distance for container.
+ * @version 0.9 2022-06-06 Addition of equality operators for const vs non-const but still of same type. And copy constructor to go from non-const to const version of same type.
  * @date 2022-06-06
  *
  * @copyright Copyright (c) 2022
@@ -35,6 +36,7 @@ namespace libEmbedded
     // I found no better alternative because if you do TConstIterator = const TIterator, using const_iterator = TConstIterator will complain because you made the whole iterator const not just the T. 
     struct Span
     {
+        friend Span<const T, TIterator, TConstIterator>;
     public:
         using iterator = TIterator;
         using const_iterator = TConstIterator;
@@ -60,7 +62,7 @@ namespace libEmbedded
          * @param start The starting point of the span.
          * @param length The number of elements in the span.
          */
-        Span(iterator start, size_t length) : spanStart(start), spanEnd(start + length) {}
+        constexpr Span(iterator start, size_t length) : spanStart(start), spanEnd(start + length) {}
 
         /**
          * @brief Retrieve a iterator that starts at the beginning and can modify the span.
@@ -181,6 +183,30 @@ namespace libEmbedded
         {
             return this->spanStart != other.spanStart || this->spanEnd != other.spanEnd;
         }
+
+        /**
+         * @brief Compares this span to the other span for value equality.
+         * 
+         * @param other The other span to compare to.
+         * @return true if the span represent the same start & end iterators.
+         * @return false if the span have different start and/or end iterators.
+         */
+        bool operator==(const Span<const T, TIterator, TConstIterator> &other) const
+        {
+            return this->spanStart == other.spanStart && this->spanEnd == other.spanEnd;
+        }
+        
+        /**
+         * @brief Compares this span to the other span for value in-equality.
+         * 
+         * @param other The other span to compare to.
+         * @return true if the span have different start and/or end iterators.
+         * @return false if the span represent the same start & end iterators.
+         */
+        bool operator!=(const Span<const T, TIterator, TConstIterator> &other) const
+        {
+            return this->spanStart != other.spanStart || this->spanEnd != other.spanEnd;
+        }
     };
 
     /**
@@ -193,6 +219,7 @@ namespace libEmbedded
     template <typename T, typename TIterator, typename TConstIterator>
     struct Span<const T, TIterator, TConstIterator>
     {
+        friend Span<T, TIterator, TConstIterator>;
     public:
         using const_iterator = TConstIterator;
     private:
@@ -218,6 +245,20 @@ namespace libEmbedded
          * @param length The number of elements in the span.
          */
         Span(const_iterator start, size_t length) : spanStart(start), spanEnd(start + length) {}
+
+        /**
+         * @brief Construct a new span from the given one.
+         * 
+         * @param span The span to create this one from.
+         */
+        Span(Span<T, TIterator, TConstIterator> span) : spanStart(span.cbegin()), spanEnd(span.cend()) {}
+
+        /**
+         * @brief Construct a new span from the given one.
+         * 
+         * @param span The span to create this one from.
+         */
+        Span(const Span<const T, TIterator, TConstIterator>& span) : spanStart(span.cbegin()), spanEnd(span.cend()) {}
 
         /**
          * @brief Retrieve a readonly iterator to the start of the span.
@@ -297,6 +338,30 @@ namespace libEmbedded
          * @return false if the span represent the same start & end iterators.
          */
         bool operator!=(const Span<T, TIterator, TConstIterator> &other) const
+        {
+            return this->spanStart != other.spanStart || this->spanEnd != other.spanEnd;
+        }
+
+        /**
+         * @brief Compares this span to the other span for value equality.
+         * 
+         * @param other The other span to compare to.
+         * @return true if the span represent the same start & end iterators.
+         * @return false if the span have different start and/or end iterators.
+         */
+        bool operator==(const Span<const T, TIterator, TConstIterator> &other) const
+        {
+            return this->spanStart == other.spanStart && this->spanEnd == other.spanEnd;
+        }
+        
+        /**
+         * @brief Compares this span to the other span for value in-equality.
+         * 
+         * @param other The other span to compare to.
+         * @return true if the span have different start and/or end iterators.
+         * @return false if the span represent the same start & end iterators.
+         */
+        bool operator!=(const Span<const T, TIterator, TConstIterator> &other) const
         {
             return this->spanStart != other.spanStart || this->spanEnd != other.spanEnd;
         }
