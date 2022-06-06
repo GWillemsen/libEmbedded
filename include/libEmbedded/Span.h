@@ -6,7 +6,9 @@
  * @version 0.2 2022-04-02 Resolved issue with const T* not having constructor params as const_iterator, just iterator.
  * @version 0.3 2022-04-14 Addition of index operators.
  * @version 0.4 2022-05-30 Added missing stddef.h include for size_t.
- * @date 2022-05-30
+ * @version 0.5 2022-06-06 Added DistanceApart to Span.
+ * @version 0.6 2022-06-06 Moved DistanceApart to namespace as Distance and added a Advance.
+ * @date 2022-06-06
  *
  * @copyright Copyright (c) 2022
  *
@@ -153,24 +155,6 @@ namespace libEmbedded
             }
             return *it;
         }
-
-        /**
-         * @brief Calculates the number of values between begin and end (is rerun every call).
-         * 
-         * @return size_t The number of element between. SIZE_MAX means the iterators were never equal.
-         */
-        size_t DistanceApart() const
-        {
-            TConstIterator it = cbegin();
-            TConstIterator end = cend();
-            size_t i = 0;
-            while(it != end && i < SIZE_MAX)
-            {
-                ++it;
-                ++i;
-            }
-            return i;
-        }
     };
 
     /**
@@ -266,25 +250,46 @@ namespace libEmbedded
             }
             return *it;
         }
-        
-        /**
-         * @brief Calculates the number of values between begin and end (is rerun every call).
-         * 
-         * @return size_t The number of element between. SIZE_MAX means the iterators were never equal.
-         */
-        size_t DistanceApart() const
-        {
-            TConstIterator it = cbegin();
-            TConstIterator end = cend();
-            size_t i = 0;
-            while(it != end && i < SIZE_MAX)
-            {
-                ++it;
-                ++i;
-            }
-            return i;
-        }
     };
+
+    /**
+     * @brief Calculates the number of values between begin and end.
+     * 
+     * @tparam TIter The type of the iterators.
+     * @tparam TDiffType The type to count the distance in.
+     * @param begin The starting point to start counting from.
+     * @param end The iterator at which to stop counting.
+     * @return size_t The number of element between. SIZE_MAX means the iterators were never equal.
+     */
+    template<typename TIter, typename TDiffType = size_t>
+    constexpr TDiffType Distance(TIter begin, TIter end)
+    {
+        TIter it = begin;
+        TDiffType i = 0;
+        while(it != end && i < SIZE_MAX)
+        {
+            ++it;
+            ++i;
+        }
+        return i;
+    }
+
+    /**
+     * @brief Increments it n number of times.
+     * 
+     * @tparam TIter The type of the iterator to increment.
+     * @param it The iterator to increment.
+     * @param n The number of times to increment begin.
+     */
+    template<typename TIter>
+    constexpr void Advance(TIter& it, size_t n)
+    {
+        while(n > 0)
+        {
+            ++it;
+            --n;
+        }
+    }
 } // namespace libEmbedded
 
 #endif // LIBEMBEDDED_SPAN_H

@@ -348,9 +348,3 @@ TYPED_TEST(SpanTFixture, RetrieveFromChangingSubStorage)
     ASSERT_EQ(40, span[3]);
 }
 
-TYPED_TEST(SpanTFixture, RetrieveDistanceFromSpan)
-{
-    const typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), this->array.data() + kArraySize);
-
-    ASSERT_EQ(this->array.size(), span.DistanceApart());
-}
