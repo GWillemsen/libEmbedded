@@ -78,7 +78,7 @@ TYPED_TEST(SpanIteratorFixture, AdvanceBeginningToEnd)
     TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);
     typename TypeParam::iterator it = list.begin();
     libEmbedded::Advance(it, kItemCount);
-    ASSERT_EQ(it, list.end());
+    ASSERT_EQ(list.end(), it);
 }
 
 TYPED_TEST(SpanIteratorFixture, AdvanceBeginningToHalfWay)
@@ -86,5 +86,69 @@ TYPED_TEST(SpanIteratorFixture, AdvanceBeginningToHalfWay)
     TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);
     typename TypeParam::iterator it = list.begin();
     libEmbedded::Advance(it, kItemCount / 2);
-    ASSERT_EQ(it, std::next(list.begin(), kItemCount / 2));
+    ASSERT_EQ(std::next(list.begin(), kItemCount / 2), it);
+}
+
+TYPED_TEST(SpanIteratorFixture, MoveToNextFromBeginning)
+{
+    TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);
+    typename TypeParam::const_iterator it = libEmbedded::Next(list.cbegin());;
+    
+    ASSERT_EQ(std::next(list.begin(), 1), it);
+}
+
+TYPED_TEST(SpanIteratorFixture, MoveToSecondFromBeginning)
+{
+    TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);
+    typename TypeParam::const_iterator it = libEmbedded::Next(list.cbegin(), 2);;
+    
+    ASSERT_EQ(std::next(list.cbegin(), 2), it);
+}
+
+TYPED_TEST(SpanIteratorFixture, MoveToHalfFromBeginning)
+{
+    TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);
+    typename TypeParam::const_iterator it = libEmbedded::Next(list.begin(), kItemCount / 2);;
+    
+    ASSERT_EQ(std::next(list.begin(), kItemCount / 2), it);
+}
+
+TYPED_TEST(SpanIteratorFixture, MoveToEndFromBeginning)
+{
+    TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);
+    typename TypeParam::const_iterator it = libEmbedded::Next(list.begin(), kItemCount);;
+    
+    ASSERT_EQ(list.end(), it);
+}
+
+TYPED_TEST(SpanIteratorFixture, MoveToBeginningFromEnd)
+{
+    TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);
+    typename TypeParam::const_iterator it = libEmbedded::Prev(list.end(), kItemCount);;
+    
+    ASSERT_EQ(list.begin(), it);
+}
+
+TYPED_TEST(SpanIteratorFixture, MoveToOneBeforeEnd)
+{
+    TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);
+    typename TypeParam::const_iterator it = libEmbedded::Prev(list.end());;
+    
+    ASSERT_EQ(std::prev(list.end()), it);
+}
+
+TYPED_TEST(SpanIteratorFixture, MoveToTwoBeforeEnd)
+{
+    TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);
+    typename TypeParam::const_iterator it = libEmbedded::Prev(list.end(), 2);;
+    
+    ASSERT_EQ(std::prev(list.end(), 2), it);
+}
+
+TYPED_TEST(SpanIteratorFixture, MoveToHalfwayFromEnd)
+{
+    TypeParam list = Creators<TypeParam>::Create(this->data, this->data + kItemCount);
+    typename TypeParam::const_iterator it = libEmbedded::Prev(list.end(), kItemCount / 2);;
+    
+    ASSERT_EQ(std::prev(list.end(), kItemCount / 2), it);
 }

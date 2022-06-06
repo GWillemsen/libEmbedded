@@ -279,7 +279,7 @@ namespace libEmbedded
      * 
      * @tparam TIter The type of the iterator to increment.
      * @param it The iterator to increment.
-     * @param n The number of times to increment begin.
+     * @param n The number of times to increment it.
      */
     template<typename TIter>
     constexpr void Advance(TIter& it, size_t n)
@@ -289,6 +289,44 @@ namespace libEmbedded
             ++it;
             --n;
         }
+    }
+
+    /**
+     * @brief Increments it n number of times and returns this iterator.
+     * 
+     * @tparam TIter The type of the iterator to increment.
+     * @param it The iterator to increment.
+     * @param n The number of times to increment it.
+     * @return TIter The iterator that was incremented n times.
+     */
+    template<typename TIter>
+    constexpr TIter Next(TIter it, size_t n = 1)
+    {
+        while(n > 0)
+        {
+            ++it;
+            --n;
+        }
+        return it;
+    }
+    
+    /**
+     * @brief Decrement it n number of times and returns this iterator.
+     * 
+     * @tparam TIter The type of the iterator to decrement.
+     * @param it The iterator to decrement.
+     * @param n The number of times to decrement it.
+     * @return TIter The iterator that was decremented n times.
+     */
+    template<typename TIter>
+    constexpr TIter Prev(TIter it, size_t n = 1)
+    {
+        while(n > 0)
+        {
+            --it;
+            --n;
+        }
+        return it;
     }
 } // namespace libEmbedded
 
