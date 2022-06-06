@@ -9,6 +9,7 @@
  * @version 0.5 2022-06-06 Added DistanceApart to Span.
  * @version 0.6 2022-06-06 Moved DistanceApart to namespace as Distance and added a Advance.
  * @version 0.7 2022-06-06 Addition of equality check operators for Span.
+ * @version 0.8 2022-06-06 Addition of shorthand function to get distance for container.
  * @date 2022-06-06
  *
  * @copyright Copyright (c) 2022
@@ -308,7 +309,7 @@ namespace libEmbedded
      * @tparam TDiffType The type to count the distance in.
      * @param begin The starting point to start counting from.
      * @param end The iterator at which to stop counting.
-     * @return size_t The number of element between. SIZE_MAX means the iterators were never equal.
+     * @return TDiffType The number of element between. SIZE_MAX means the iterators were never equal.
      */
     template<typename TIter, typename TDiffType = size_t>
     constexpr TDiffType Distance(TIter begin, TIter end)
@@ -321,6 +322,20 @@ namespace libEmbedded
             ++i;
         }
         return i;
+    }
+
+    /**
+     * @brief Computes the distance of a container (shorthand for Distance(cont.cbegin(), cont.cend()))
+     * 
+     * @tparam TContainer The container type to get the distance from.
+     * @tparam TDiffType The type to count the distance in.
+     * @param container The container to get the distance between the begin and end iterator from.
+     * @return TDiffType The number of element between. SIZE_MAX means the iterators were never equal. 
+     */
+    template<typename TContainer, typename TDiffType = size_t>
+    constexpr TDiffType Distance(const TContainer& container)
+    {
+        return Distance<typename TContainer::const_iterator, TDiffType>(container.cbegin(), container.cend());
     }
 
     /**
