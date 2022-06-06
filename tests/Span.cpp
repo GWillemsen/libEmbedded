@@ -155,6 +155,54 @@ TEST_F(SpanFixture, AssignValueUsingIndexOperator)
     ASSERT_EQ(UINT8_MAX, span[4]);
 }
 
+TEST_F(SpanFixture, SpanEqualCopyConstructorCopy)
+{
+    SpanT span(this->array.data(), kArraySize);
+    SpanT span2 = SpanT(span);
+    EXPECT_TRUE(span == span2);
+    EXPECT_FALSE(span != span2);
+}
+
+TEST_F(SpanFixture, SpanEqualAssignCopy)
+{
+    SpanT span(this->array.data(), kArraySize);
+    SpanT span2 = span;
+    EXPECT_TRUE(span == span2);
+    EXPECT_FALSE(span != span2);
+}
+
+TEST_F(SpanFixture, SpanEqualSpanToSameArray)
+{
+    SpanT span(this->array.data(), kArraySize);
+    SpanT span2(this->array.data(), kArraySize);
+    EXPECT_TRUE(span == span2);
+    EXPECT_FALSE(span != span2);
+}
+
+TEST_F(SpanFixture, SpanEqualSpanToSameStartDifferentEnd)
+{
+    SpanT span(this->array.data(), kArraySize);
+    SpanT span2(this->array.data(), kArraySize - 1);
+    EXPECT_FALSE(span == span2);
+    EXPECT_TRUE(span != span2);
+}
+
+TEST_F(SpanFixture, SpanEqualSpanToDifferentStartSameEnd)
+{
+    SpanT span(this->array.data(), kArraySize);
+    SpanT span2(this->array.data() + 1, kArraySize - 1);
+    EXPECT_FALSE(span == span2);
+    EXPECT_TRUE(span != span2);
+}
+
+TEST_F(SpanFixture, SpanEqualSpanToDifferentStartDifferentEnd)
+{
+    SpanT span(this->array.data(), kArraySize);
+    SpanT span2(this->array.data() + 1, kArraySize - 2);
+    EXPECT_FALSE(span == span2);
+    EXPECT_TRUE(span != span2);
+}
+
 TYPED_TEST(SpanTFixture, SpanStartEndConstSpanIteratorOverRegularPP)
 {
     const typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), this->array.data() + kArraySize);
