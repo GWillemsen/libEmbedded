@@ -125,7 +125,14 @@ namespace libEmbedded
          */
         const T& operator[](size_t index) const
         {
-            return *(spanStart + index);
+            auto it = cbegin();
+            size_t i = index;
+            while(i > 0)
+            {
+                --i;
+                ++it;
+            }
+            return *it;
         }
 
         /**
@@ -136,7 +143,14 @@ namespace libEmbedded
          */
         T& operator[](size_t index)
         {
-            return *(spanStart + index);
+            auto it = begin();
+            size_t i = index;
+            while(i > 0)
+            {
+                --i;
+                ++it;
+            }
+            return *it;
         }
     };
 
@@ -224,7 +238,14 @@ namespace libEmbedded
          */
         const T& operator[](size_t index) const
         {
-            return *(spanStart + index);
+            auto it = begin();
+            size_t i = index;
+            while(i > 0)
+            {
+                --i;
+                ++it;
+            }
+            return *it;
         }
     };
 } // namespace libEmbedded
