@@ -16,6 +16,7 @@
 #define LIBEMBEDDED_SPAN_H
 
 #include <stddef.h>
+#include "math.h"
 
 namespace libEmbedded
 {
@@ -152,6 +153,24 @@ namespace libEmbedded
             }
             return *it;
         }
+
+        /**
+         * @brief Calculates the number of values between begin and end (is rerun every call).
+         * 
+         * @return size_t The number of element between. SIZE_MAX means the iterators were never equal.
+         */
+        size_t DistanceApart() const
+        {
+            TConstIterator it = cbegin();
+            TConstIterator end = cend();
+            size_t i = 0;
+            while(it != end && i < SIZE_MAX)
+            {
+                ++it;
+                ++i;
+            }
+            return i;
+        }
     };
 
     /**
@@ -246,6 +265,24 @@ namespace libEmbedded
                 ++it;
             }
             return *it;
+        }
+        
+        /**
+         * @brief Calculates the number of values between begin and end (is rerun every call).
+         * 
+         * @return size_t The number of element between. SIZE_MAX means the iterators were never equal.
+         */
+        size_t DistanceApart() const
+        {
+            TConstIterator it = cbegin();
+            TConstIterator end = cend();
+            size_t i = 0;
+            while(it != end && i < SIZE_MAX)
+            {
+                ++it;
+                ++i;
+            }
+            return i;
         }
     };
 } // namespace libEmbedded

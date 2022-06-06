@@ -337,7 +337,7 @@ TYPED_TEST(SpanTFixture, RetrieveItemAtIndexUsingIndexOperator)
     ASSERT_EQ(UINT8_MAX, span[4]);
 }
 
-TYPED_TEST(SpanTFixture, RetrieveFromChaningSubstorage)
+TYPED_TEST(SpanTFixture, RetrieveFromChangingSubStorage)
 {
     constexpr size_t kBufferSize = 5;
     uint8_t buffer[kBufferSize] = { 0, 1, 2, 3, 4 };
@@ -346,4 +346,11 @@ TYPED_TEST(SpanTFixture, RetrieveFromChaningSubstorage)
     ASSERT_EQ(3, span[3]);
     buffer[3] = 40;
     ASSERT_EQ(40, span[3]);
+}
+
+TYPED_TEST(SpanTFixture, RetrieveDistanceFromSpan)
+{
+    const typename SpanTFixture<TypeParam>::SpanT span(this->array.data(), this->array.data() + kArraySize);
+
+    ASSERT_EQ(this->array.size(), span.DistanceApart());
 }
