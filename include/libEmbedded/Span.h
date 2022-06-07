@@ -11,7 +11,8 @@
  * @version 0.7 2022-06-06 Addition of equality check operators for Span.
  * @version 0.8 2022-06-06 Addition of shorthand function to get distance for container.
  * @version 0.9 2022-06-06 Addition of equality operators for const vs non-const but still of same type. And copy constructor to go from non-const to const version of same type.
- * @date 2022-06-06
+ * @version 0.10 2022-06-07 Span constructors now all constexpr + non-const iterator using defined on Span<const T>
+ * @date 2022-06-07
  *
  * @copyright Copyright (c) 2022
  *
@@ -222,6 +223,7 @@ namespace libEmbedded
         friend Span<T, TIterator, TConstIterator>;
     public:
         using const_iterator = TConstIterator;
+        using iterator = TIterator;
     private:
 
     public:
@@ -244,21 +246,21 @@ namespace libEmbedded
          * @param start The starting point of the span.
          * @param length The number of elements in the span.
          */
-        Span(const_iterator start, size_t length) : spanStart(start), spanEnd(start + length) {}
+        constexpr Span(const_iterator start, size_t length) : spanStart(start), spanEnd(start + length) {}
 
         /**
          * @brief Construct a new span from the given one.
          * 
          * @param span The span to create this one from.
          */
-        Span(Span<T, TIterator, TConstIterator> span) : spanStart(span.cbegin()), spanEnd(span.cend()) {}
+        constexpr Span(Span<T, TIterator, TConstIterator> span) : spanStart(span.cbegin()), spanEnd(span.cend()) {}
 
         /**
          * @brief Construct a new span from the given one.
          * 
          * @param span The span to create this one from.
          */
-        Span(const Span<const T, TIterator, TConstIterator>& span) : spanStart(span.cbegin()), spanEnd(span.cend()) {}
+        constexpr Span(const Span<const T, TIterator, TConstIterator>& span) : spanStart(span.cbegin()), spanEnd(span.cend()) {}
 
         /**
          * @brief Retrieve a readonly iterator to the start of the span.
