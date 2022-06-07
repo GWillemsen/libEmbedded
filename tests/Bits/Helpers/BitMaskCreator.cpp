@@ -2,6 +2,7 @@
 #include "libEmbedded/bits/Helpers.h"
 
 using libEmbedded::bits::CreateFlagSet;
+using libEmbedded::bits::HasFlagSet;
 
 class BitMaskCreatorFixture : public ::testing::Test {};
 
@@ -51,4 +52,30 @@ TEST_F(BitMaskCreatorFixture, MultiplePositionArgInRange)
 {
     uint16_t flags = CreateFlagSet<uint16_t, 15, 2, 8, 10>();
     ASSERT_EQ((1 << 15) | (1 << 2) |(1 << 8) | (1 << 10), flags);
+}
+
+TEST(BitFlagChecker, CheckMultipleBitFlagOnUint16)
+{
+    uint16_t flags = (1 << 15) | (1 << 2) | (1 << 8) | (1 << 10);
+    ASSERT_TRUE(HasFlagSet(flags, 15, 2, 8, 10));
+    ASSERT_TRUE(HasFlagSet(flags, 15, 2));
+}
+
+TEST(BitFlagChecker, CheckSingleBitFlagOnUint16)
+{
+    uint16_t flags = (1 << 15) | (1 << 2) | (1 << 8) | (1 << 10);
+    ASSERT_TRUE(HasFlagSet(flags, 15));
+}
+
+TEST(BitFlagChecker, CheckMultipleBitFlagOnUint8)
+{
+    uint16_t flags = (1 << 5) | (1 << 2) | (1 << 8) | (1 << 1);
+    ASSERT_TRUE(HasFlagSet(flags, 5, 2, 8, 1));
+    ASSERT_TRUE(HasFlagSet(flags, 5, 2));
+}
+
+TEST(BitFlagChecker, CheckSingleBitFlagOnUint8)
+{
+    uint16_t flags = (1 << 5) | (1 << 2) | (1 << 8) | (1 << 1);
+    ASSERT_TRUE(HasFlagSet(flags, 5));
 }

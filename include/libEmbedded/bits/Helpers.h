@@ -6,7 +6,8 @@
  * @version 0.2 2022-05-27 Added GetBitSize helper.
  * @version 0.3 2022-05-28 Added ExtractBits helper.
  * @version 0.4 2022-05-28 Added GetCombinedValue & CombineBitValues helper.
- * @date 2022-05-28
+ * @version 0.5 2022-06-07 Added HasFlagSet to be able to quickly check what bits are set.
+ * @date 2022-06-07
  *
  * @copyright Copyright (c) 2022
  *
@@ -182,6 +183,39 @@ namespace libEmbedded
         constexpr T CreateFlagSet()
         {
             return CreateFlagSet<T, TPosition1>() | CreateFlagSet<T, TPosition2, TPositions...>();
+        }
+
+        /**
+         * @brief Check if the bit at position in value is set.
+         * 
+         * @tparam T The type of the value to check the bit in.
+         * @param value The vale to check the bit in.
+         * @param position The 0-indexed bit position to check.
+         * @return true If the bit was set.
+         * @return false If the bit was cleared.
+         */
+        template<typename T>
+        constexpr bool HasFlagSet(T value,size_t position)
+        {
+            return (value & ((T)1 << position)) != 0;
+        }
+
+        /**
+         * @brief Checks if all the given bit indexes are set in the value.
+         * 
+         * @tparam T The type of the value to check the bits in.
+         * @tparam TPositions The type of the bit indexes to check.
+         * @param value The value to check the bits in.
+         * @param position The 0-index of the first bit to check.
+         * @param position2 The 0-index of the second bit to check.
+         * @param positions The 0-index of any optional other bits to check.
+         * @return true If all the bits are set.
+         * @return false If one or all of the bits are cleared.
+         */
+        template<typename T, typename ...TPositions>
+        constexpr bool HasFlagSet(T value, size_t position, size_t position2, TPositions... positions)
+        {
+            return HasFlagSet(value, position) && HasFlagSet(value, position2, positions...);
         }
     } // namespace bits
 } // namespace libEmbedded
