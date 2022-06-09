@@ -52,9 +52,14 @@ set(TEST_HEADER_FILES
 add_executable(tests ${TEST_SRC_FILES} ${TEST_HEADER_FILES})
 target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(tests gtest_main gmock Embedded)
-target_link_options(tests PUBLIC "--coverage")
-target_compile_options(tests PRIVATE "-O0")
-target_compile_options(tests PRIVATE "--coverage")
+
+# MSVC doesn't support generation coverage in the same way so make it a 
+# GCC/CLANG only option
+if (NOT MSVC)
+  target_link_options(tests PUBLIC "--coverage")
+  target_compile_options(tests PRIVATE "-O0")
+  target_compile_options(tests PRIVATE "--coverage")
+endif()
 
 get_target_property(TESTS_BIN_DIR tests BINARY_DIR)
 get_target_property(EMBEDDED_BIN_DIR ${PROJECT_NAME} BINARY_DIR)

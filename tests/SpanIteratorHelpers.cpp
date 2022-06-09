@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "libEmbedded/Span.h"
+#include <array>
 #include <list>
 
 template<typename T>

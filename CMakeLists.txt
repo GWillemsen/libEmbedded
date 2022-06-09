@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.0)
+cmake_minimum_required(VERSION 3.15)
 project(Embedded CXX)
 
 option(BUILD_LIBEMBEDDED_TEST "Also build the unit tests for the library." OFF)
@@ -50,10 +50,14 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "debug")
-    if (${BUILD_TEST})
-        target_compile_options(${PROJECT_NAME} PRIVATE "--coverage")
-        target_compile_options(${PROJECT_NAME} PRIVATE "-O0")
-        target_link_options(${PROJECT_NAME} PUBLIC "--coverage")
+    if (${BUILD_LIBEMBEDDED_TEST})
+        # MSVC doesn't support generation coverage in the same way so make it a 
+        # GCC/CLANG only option
+        if (NOT MSVC)
+            target_compile_options(${PROJECT_NAME} PRIVATE "--coverage")
+            target_compile_options(${PROJECT_NAME} PRIVATE "-O0")
+            target_link_options(${PROJECT_NAME} PUBLIC "--coverage")
+        endif()
     endif()
 endif()
 
