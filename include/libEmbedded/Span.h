@@ -12,6 +12,7 @@
  * @version 0.8 2022-06-06 Addition of shorthand function to get distance for container.
  * @version 0.9 2022-06-06 Addition of equality operators for const vs non-const but still of same type. And copy constructor to go from non-const to const version of same type.
  * @version 0.10 2022-06-07 Span constructors now all constexpr + non-const iterator using defined on Span<const T>
+ * @version 0.11 2022-06-09 Distance, Next and Prev are now single statement constexpr functions (but they are recursive now) for stricter C++11 compliance.
  * @date 2022-06-07
  *
  * @copyright Copyright (c) 2022
@@ -381,14 +382,7 @@ namespace libEmbedded
     template<typename TIter, typename TDiffType = size_t>
     constexpr TDiffType Distance(TIter begin, TIter end)
     {
-        TIter it = begin;
-        TDiffType i = 0;
-        while(it != end && i < SIZE_MAX)
-        {
-            ++it;
-            ++i;
-        }
-        return i;
+        return begin == end ? 0 : Distance(++begin, end) + 1;
     }
 
     /**
@@ -433,12 +427,7 @@ namespace libEmbedded
     template<typename TIter>
     constexpr TIter Next(TIter it, size_t n = 1)
     {
-        while(n > 0)
-        {
-            ++it;
-            --n;
-        }
-        return it;
+        return n == 0 ? it : Next(++it, n - 1);
     }
     
     /**
@@ -452,12 +441,7 @@ namespace libEmbedded
     template<typename TIter>
     constexpr TIter Prev(TIter it, size_t n = 1)
     {
-        while(n > 0)
-        {
-            --it;
-            --n;
-        }
-        return it;
+        return n == 0 ? it : Prev(--it, n -1);
     }
 } // namespace libEmbedded
 
