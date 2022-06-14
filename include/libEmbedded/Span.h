@@ -13,7 +13,8 @@
  * @version 0.9 2022-06-06 Addition of equality operators for const vs non-const but still of same type. And copy constructor to go from non-const to const version of same type.
  * @version 0.10 2022-06-07 Span constructors now all constexpr + non-const iterator using defined on Span<const T>
  * @version 0.11 2022-06-09 Distance, Next and Prev are now single statement constexpr functions (but they are recursive now) for stricter C++11 compliance.
- * @date 2022-06-07
+ * @version 0.12 2022-06-14 Moved iterator helpers to own Iterator.h file.
+ * @date 2022-06-14
  *
  * @copyright Copyright (c) 2022
  *
@@ -369,80 +370,6 @@ namespace libEmbedded
             return this->spanStart != other.spanStart || this->spanEnd != other.spanEnd;
         }
     };
-
-    /**
-     * @brief Calculates the number of values between begin and end.
-     * 
-     * @tparam TIter The type of the iterators.
-     * @tparam TDiffType The type to count the distance in.
-     * @param begin The starting point to start counting from.
-     * @param end The iterator at which to stop counting.
-     * @return TDiffType The number of element between. SIZE_MAX means the iterators were never equal.
-     */
-    template<typename TIter, typename TDiffType = size_t>
-    constexpr TDiffType Distance(TIter begin, TIter end)
-    {
-        return begin == end ? 0 : Distance(++begin, end) + 1;
-    }
-
-    /**
-     * @brief Computes the distance of a container (shorthand for Distance(cont.cbegin(), cont.cend()))
-     * 
-     * @tparam TContainer The container type to get the distance from.
-     * @tparam TDiffType The type to count the distance in.
-     * @param container The container to get the distance between the begin and end iterator from.
-     * @return TDiffType The number of element between. SIZE_MAX means the iterators were never equal. 
-     */
-    template<typename TContainer, typename TDiffType = size_t>
-    constexpr TDiffType Distance(const TContainer& container)
-    {
-        return Distance<typename TContainer::const_iterator, TDiffType>(container.cbegin(), container.cend());
-    }
-
-    /**
-     * @brief Increments it n number of times.
-     * 
-     * @tparam TIter The type of the iterator to increment.
-     * @param it The iterator to increment.
-     * @param n The number of times to increment it.
-     */
-    template<typename TIter>
-    constexpr void Advance(TIter& it, size_t n)
-    {
-        while(n > 0)
-        {
-            ++it;
-            --n;
-        }
-    }
-
-    /**
-     * @brief Increments it n number of times and returns this iterator.
-     * 
-     * @tparam TIter The type of the iterator to increment.
-     * @param it The iterator to increment.
-     * @param n The number of times to increment it.
-     * @return TIter The iterator that was incremented n times.
-     */
-    template<typename TIter>
-    constexpr TIter Next(TIter it, size_t n = 1)
-    {
-        return n == 0 ? it : Next(++it, n - 1);
-    }
-    
-    /**
-     * @brief Decrement it n number of times and returns this iterator.
-     * 
-     * @tparam TIter The type of the iterator to decrement.
-     * @param it The iterator to decrement.
-     * @param n The number of times to decrement it.
-     * @return TIter The iterator that was decremented n times.
-     */
-    template<typename TIter>
-    constexpr TIter Prev(TIter it, size_t n = 1)
-    {
-        return n == 0 ? it : Prev(--it, n -1);
-    }
 } // namespace libEmbedded
 
 #endif // LIBEMBEDDED_SPAN_H
