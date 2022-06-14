@@ -4,7 +4,8 @@
  * @brief A helper to do edge detection on a boolean input signal.
  * @version 0.1 2022-02-20 Initial value
  * @version 0.2 2022-03-05 Addition of comparison operators
- * @date 2022-03-05
+ * @version 0.2 2022-06-14 Wrong construction order of type and value.
+ * @date 2022-06-14
  * 
  * @copyright Copyright (c) 2022
  * 
@@ -63,14 +64,14 @@ namespace libEmbedded
          * @param type [in] The type of the edge to detect.
          * @param initialValue [in] The initial state of the signal to start detection with on the first iteration.
          */
-        constexpr EdgeDetector(EdgeType type, bool initialValue) : previousValue(initialValue), edgeType(type){};
+        constexpr EdgeDetector(EdgeType type, bool initialValue) : edgeType(type), previousValue(initialValue){};
 
         /**
          * @brief Constructs a new EdgeDetector with the state from the given one.
          * 
          * @param other The EdgeDetector to copy state from.
          */
-        constexpr EdgeDetector(const EdgeDetector& other) : previousValue(other.previousValue), edgeType(other.edgeType){}
+        constexpr EdgeDetector(const EdgeDetector& other) : edgeType(other.edgeType), previousValue(other.previousValue){}
 
         /**
          * @brief Update the state of the edge detector with a new input value.
