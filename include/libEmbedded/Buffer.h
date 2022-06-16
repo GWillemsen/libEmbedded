@@ -2,8 +2,9 @@
  * @file Buffer.h
  * @author Giel Willemsen
  * @brief Implement a buffer of a static size that drops elements the oldest elements once space runs out.
- * @version 0.1
- * @date 2022-02-20
+ * @version 0.1 2022-02-20 Initial version
+ * @version 0.2 2022-06-16 Resolved a issue where the Remove method had a wrong memory offset in the buffer and would also reset the elementsUsed counter.
+ * @date 2022-06-16
  *
  * @copyright Copyright (c) 2022
  *
@@ -283,8 +284,9 @@ namespace libEmbedded
         else
         {
             memcpy(this->GetIndexPointer(0), this->GetConstIndexPointer(removeCount), (this->Size() - removeCount) * sizeof(T));
-            iterator newEnd = this->GetIndexPointer(this->Size() + 1);
-            memset(newEnd, 0, (TNumElements - this->Size()) * sizeof(T));
+            iterator newEnd = this->GetIndexPointer(this->Size());
+            const size_t kSetItemCount = (TNumElements - this->Size());
+            memset(newEnd, 0, kSetItemCount  * sizeof(T));
             this->elementsUsed -= removeCount;
         }
     }
@@ -411,13 +413,13 @@ namespace libEmbedded
     template <typename T, size_t TNumElements>
     typename Buffer<T, TNumElements>::iterator Buffer<T, TNumElements>::GetIndexPointer(size_t index)
     {
-        return ((iterator)this->workspace) + index;
+        return iterator(this->workspace + (sizeof(T) * index));
     }
 
     template <typename T, size_t TNumElements>
     typename Buffer<T, TNumElements>::const_iterator Buffer<T, TNumElements>::GetConstIndexPointer(size_t index) const
     {
-        return ((const_iterator)this->workspace) + index;
+        return const_iterator(this->workspace + (sizeof(T) * index));
     }
 } // namespace libEmbedded
 
