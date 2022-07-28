@@ -192,5 +192,5 @@ TEST(BufferOperations, RemoveRangeAndProperMemoryClear)
     }
     ASSERT_EQ(5, buffer.Size());
     buffer.Remove(1);
-    EXPECT_EQ(12, buffer.Size());
+    EXPECT_EQ(4, buffer.Size());
 }
