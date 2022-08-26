@@ -31,6 +31,7 @@ set(TEST_SRC_FILES
   ${TEST_SRC_DIR}/Span.cpp
   ${TEST_SRC_DIR}/Iterator.cpp
   ${TEST_SRC_DIR}/Helpers.cpp
+  ${TEST_SRC_DIR}/Expected.cpp
   ${TEST_SRC_DIR}/Callback/CallbackCommon.cpp
   ${TEST_SRC_DIR}/Callback/NoReturnNoArgs.cpp
   ${TEST_SRC_DIR}/Callback/NoReturnWithArgs.cpp
@@ -59,6 +60,8 @@ if (NOT MSVC)
   target_link_options(tests PUBLIC "--coverage")
   target_compile_options(tests PRIVATE "-O0")
   target_compile_options(tests PRIVATE "--coverage")
+  target_compile_options(tests PRIVATE "-Wall")
+  target_compile_options(tests PRIVATE "-Wpedantic")
 endif()
 
 get_target_property(TESTS_BIN_DIR tests BINARY_DIR)
@@ -73,7 +76,7 @@ gtest_discover_tests(tests)
 
 add_custom_target(gcov
   DEPENDS tests
-  COMMAND ctest -j 8
+  COMMAND ${CMAKE_CTEST_COMMAND} -v -j 8
   WORKING_DIR ${TESTS_BIN_DIR}
 )
 
