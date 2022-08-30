@@ -18,6 +18,7 @@ set(${PROJECT_NAME}_HEADERS
         ${${PROJECT_NAME}_HEADERS_DIR}/Span.h
         ${${PROJECT_NAME}_HEADERS_DIR}/Helpers.h
         ${${PROJECT_NAME}_HEADERS_DIR}/Expected.h
+        ${${PROJECT_NAME}_HEADERS_DIR}/Optional.h
         ${${PROJECT_NAME}_HEADERS_DIR}/bits/Helpers.h
 )
         
