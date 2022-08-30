@@ -40,6 +40,22 @@ namespace libEmbedded
             }
         }
 
+        void MoveAssignT(T&& other) {
+            if (this->isSet) {
+                this->Get() = std::forward<T>(other);
+            } else {
+                Set(std::forward<T>(other));
+            }
+        }
+
+        void CopyAssignT(const T& other) {
+            if (this->isSet) {
+                this->Get() = other;
+            } else {
+                Set(other);
+            }
+        }
+
     public:
         //
         // Constructors & Destructors
@@ -199,10 +215,10 @@ namespace libEmbedded
          * @return Optional& The current Optional with the other copied into this one.
          */
         Optional& operator=(const Optional& other) noexcept(noexcept(DestructPresent()) && std::is_nothrow_assignable<T, const T&>::value) {
-            this->DestructPresent();
             if (other.IsSet()) {
-                this->Get() = other.Get();
-                this->isSet = true;
+                this->CopyAssignT(other.Get());
+            } else {
+                this->DestructPresent();
             }
             return *this;
         }
@@ -214,11 +230,11 @@ namespace libEmbedded
          * @return Optional& The current Optional that the other is moved in.
          */
         Optional& operator=(Optional&& other) noexcept(noexcept(DestructPresent()) && std::is_nothrow_move_assignable<T>::value) {
-            this->DestructPresent();
             if (other.IsSet()) {
-                this->Get() = std::move(other.Get());
-                this->isSet = true;
+                this->MoveAssignT(std::move(other.Get()));
                 other.isSet = false;
+            } else {
+                this->DestructPresent();
             }
             return *this;
         }
@@ -230,9 +246,7 @@ namespace libEmbedded
          * @return Optional& The current Optional that has it's value set to other.
          */
         Optional& operator=(const T& other) noexcept(noexcept(DestructPresent()) && std::is_nothrow_assignable<T, const T&>::value) {
-            this->DestructPresent();
-            this->Get() = other;
-            this->isSet = true;
+            this->CopyAssignT(other);
             return *this;
         }
 
@@ -243,9 +257,7 @@ namespace libEmbedded
          * @return Optional& The current Optional that has the other value moved into it.
          */
         Optional& operator=(T&& other) noexcept(noexcept(DestructPresent()) && std::is_nothrow_move_assignable<T>::value && std::is_nothrow_move_constructible<T>::value) {
-            this->DestructPresent();
-            this->Get() = std::move(other);
-            this->isSet = true;
+            this->MoveAssignT(std::forward<T>(other));
             return *this;
         }
     };

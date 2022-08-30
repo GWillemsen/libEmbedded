@@ -63,12 +63,27 @@ TEST_F(OptionalIntFixture, ConstructEmpty)
 	EXPECT_FALSE(exp.IsSet());
 }
 
-TEST_F(OptionalIntFixture, AssignFromT)
+TEST_F(OptionalIntFixture, AssignEmptyFromT)
 {
-	constexpr int kValue = 0;
+	constexpr int kValue = 20;
 	Optional exp = Optional();
 
 	EXPECT_FALSE(exp.IsSet());
+
+	exp = kValue;
+
+	EXPECT_TRUE(exp.IsSet());
+	EXPECT_EQ(kValue, exp.Get());
+}
+
+TEST_F(OptionalIntFixture, AssignSetFromT)
+{
+	constexpr int kValue = 20;
+	constexpr int kValueSecondary = 40;
+	Optional exp = Optional(kValueSecondary);
+
+	EXPECT_TRUE(exp.IsSet());
+	EXPECT_EQ(kValueSecondary, exp.Get());
 
 	exp = kValue;
 
@@ -113,7 +128,7 @@ TEST_F(OptionalCustomFixture, ConstructFromExisting)
     EXPECT_EQ(0, CustomCounter::moveAssignmentCount);
 }
 
-TEST_F(OptionalCustomFixture, ConstructFromExistingAndAssignOptionalToNewVariable)
+TEST_F(OptionalCustomFixture, ConstructFromExistingAndAssignOptionalToNewEmptyVariable)
 {
 	CustomCounter::ResetCounters();
 	{
@@ -132,11 +147,38 @@ TEST_F(OptionalCustomFixture, ConstructFromExistingAndAssignOptionalToNewVariabl
 	}
 
 	EXPECT_EQ(1, CustomCounter::constructorCount);
-	EXPECT_EQ(1, CustomCounter::copyConstructorCount);
+	EXPECT_EQ(2, CustomCounter::copyConstructorCount);
+    EXPECT_EQ(0, CustomCounter::moveConstructorCount);
+	EXPECT_EQ(0, CustomCounter::assignmentCount);
+	EXPECT_EQ(0, CustomCounter::moveAssignmentCount);
+	EXPECT_EQ(3, CustomCounter::destructorCount);
+}
+
+TEST_F(OptionalCustomFixture, ConstructFromExistingAndAssignOptionalToNewSetVariable)
+{
+	CustomCounter::ResetCounters();
+	{
+		Custom custom(20);
+		Custom customOther(30);
+		Optional a = Optional(custom);
+		Optional b = Optional(customOther);
+		EXPECT_TRUE(a.IsSet());
+		EXPECT_TRUE(b.IsSet());
+		b = a;
+
+		EXPECT_TRUE(a.IsSet());
+		EXPECT_TRUE(b.IsSet());
+        EXPECT_EQ(custom, a.Get());
+        EXPECT_EQ(custom, b.Get());
+        EXPECT_EQ(a.Get(), b.Get());
+	}
+
+	EXPECT_EQ(2, CustomCounter::constructorCount);
+	EXPECT_EQ(2, CustomCounter::copyConstructorCount);
     EXPECT_EQ(0, CustomCounter::moveConstructorCount);
 	EXPECT_EQ(1, CustomCounter::assignmentCount);
 	EXPECT_EQ(0, CustomCounter::moveAssignmentCount);
-	EXPECT_EQ(3, CustomCounter::destructorCount);
+	EXPECT_EQ(4, CustomCounter::destructorCount);
 }
 
 TEST_F(OptionalCustomFixture, MoveConstructFromExisting)
@@ -160,7 +202,7 @@ TEST_F(OptionalCustomFixture, MoveConstructFromExisting)
 	EXPECT_EQ(2, CustomCounter::destructorCount);
 }
 
-TEST_F(OptionalCustomFixture, MoveAssignFromExisting)
+TEST_F(OptionalCustomFixture, MoveAssignEmptyFromExisting)
 {
 	CustomCounter::ResetCounters();
 	{
@@ -178,10 +220,35 @@ TEST_F(OptionalCustomFixture, MoveAssignFromExisting)
 
 	EXPECT_EQ(1, CustomCounter::constructorCount);
 	EXPECT_EQ(1, CustomCounter::copyConstructorCount);
+	EXPECT_EQ(1, CustomCounter::moveConstructorCount);
+	EXPECT_EQ(0, CustomCounter::assignmentCount);
+	EXPECT_EQ(0, CustomCounter::moveAssignmentCount);
+	EXPECT_EQ(2, CustomCounter::destructorCount);
+}
+
+TEST_F(OptionalCustomFixture, MoveAssignSetFromExisting)
+{
+	CustomCounter::ResetCounters();
+	{
+		Custom custom(20);
+		Custom customOther(40);
+		Optional a = Optional(custom);
+		Optional b = Optional(customOther);
+		EXPECT_TRUE(a.IsSet());
+		EXPECT_TRUE(b.IsSet());
+        b = std::move(a);
+		EXPECT_FALSE(a.IsSet());
+		EXPECT_TRUE(b.IsSet());
+
+        EXPECT_EQ(custom, b.Get());
+	}
+
+	EXPECT_EQ(2, CustomCounter::constructorCount);
+	EXPECT_EQ(2, CustomCounter::copyConstructorCount);
 	EXPECT_EQ(0, CustomCounter::moveConstructorCount);
 	EXPECT_EQ(0, CustomCounter::assignmentCount);
 	EXPECT_EQ(1, CustomCounter::moveAssignmentCount);
-	EXPECT_EQ(2, CustomCounter::destructorCount);
+	EXPECT_EQ(3, CustomCounter::destructorCount);
 }
 
 TEST_F(OptionalCustomFixture, CopyConstructorEmptyAssignToSecondVariable)
@@ -242,7 +309,7 @@ TEST_F(OptionalCustomFixture, MoveConstructFromEmpty)
 	EXPECT_EQ(0, CustomCounter::destructorCount);
 }
 
-TEST_F(OptionalCustomFixture, MoveAssignFromEmpty)
+TEST_F(OptionalCustomFixture, MoveAssignEmptyFromEmpty)
 {
 	CustomCounter::ResetCounters();
 	{
@@ -263,7 +330,29 @@ TEST_F(OptionalCustomFixture, MoveAssignFromEmpty)
 	EXPECT_EQ(0, CustomCounter::destructorCount);
 }
 
-TEST_F(OptionalCustomFixture, MoveAssignFromT)
+TEST_F(OptionalCustomFixture, MoveAssignSetFromEmpty)
+{
+	CustomCounter::ResetCounters();
+	{
+		Custom custom(20);
+		Optional a = Optional();
+		Optional b = Optional(custom);
+		EXPECT_FALSE(a.IsSet());
+		EXPECT_TRUE(b.IsSet());
+        b = std::move(a);
+		EXPECT_FALSE(a.IsSet());
+		EXPECT_FALSE(b.IsSet());
+	}
+
+	EXPECT_EQ(1, CustomCounter::constructorCount);
+	EXPECT_EQ(1, CustomCounter::copyConstructorCount);
+	EXPECT_EQ(0, CustomCounter::moveConstructorCount);
+	EXPECT_EQ(0, CustomCounter::assignmentCount);
+	EXPECT_EQ(0, CustomCounter::moveAssignmentCount);
+	EXPECT_EQ(2, CustomCounter::destructorCount);
+}
+
+TEST_F(OptionalCustomFixture, MoveAssignEmptyFromT)
 {
 	CustomCounter::ResetCounters();
 	{
@@ -277,10 +366,34 @@ TEST_F(OptionalCustomFixture, MoveAssignFromT)
 
 	EXPECT_EQ(1, CustomCounter::constructorCount);
 	EXPECT_EQ(0, CustomCounter::copyConstructorCount);
+	EXPECT_EQ(1, CustomCounter::moveConstructorCount);
+	EXPECT_EQ(0, CustomCounter::assignmentCount);
+	EXPECT_EQ(0, CustomCounter::moveAssignmentCount);
+	EXPECT_EQ(2, CustomCounter::destructorCount);
+}
+
+TEST_F(OptionalCustomFixture, MoveAssignSetFromT)
+{
+	CustomCounter::ResetCounters();
+	{
+		Custom custom(20);
+		Custom customOther(40);
+		Optional a = Optional(customOther);
+		EXPECT_TRUE(a.IsSet());
+		EXPECT_EQ(40, a.Get().getValue());
+		EXPECT_EQ(customOther, a.Get());
+        a = std::move(custom);
+		EXPECT_TRUE(a.IsSet());
+		EXPECT_EQ(20, a.Get().getValue());
+		EXPECT_EQ(custom, a.Get());
+	}
+
+	EXPECT_EQ(2, CustomCounter::constructorCount);
+	EXPECT_EQ(1, CustomCounter::copyConstructorCount);
 	EXPECT_EQ(0, CustomCounter::moveConstructorCount);
 	EXPECT_EQ(0, CustomCounter::assignmentCount);
 	EXPECT_EQ(1, CustomCounter::moveAssignmentCount);
-	EXPECT_EQ(2, CustomCounter::destructorCount);
+	EXPECT_EQ(3, CustomCounter::destructorCount);
 }
 
 TEST_F(OptionalCustomFixture, DereferenceFromNonConst)
