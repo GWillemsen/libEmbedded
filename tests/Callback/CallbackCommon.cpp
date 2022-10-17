@@ -42,7 +42,7 @@ TYPED_TEST(CallbackCommonOperationTests, CmpEqualToSameFromAssignmentOperator)
     ASSERT_TRUE(cb == cb2);
 }
 
-TYPED_TEST(CallbackCommonOperationTests, CmpEqualToSameDifferentContextedButSameFunction)
+TYPED_TEST(CallbackCommonOperationTests, CmpEqualToDifferentContextButSameFunction)
 {
     Context context;
     Context context2;
@@ -51,11 +51,12 @@ TYPED_TEST(CallbackCommonOperationTests, CmpEqualToSameDifferentContextedButSame
     ASSERT_FALSE(cb == cb2);
 }
 
-TYPED_TEST(CallbackCommonOperationTests, CmpEqualToSameDifferentFunctionsButSameContex)
+TYPED_TEST(CallbackCommonOperationTests, CmpEqualToDifferentFunctionsButSameContext)
 {
     Context context;
     Callback<TypeParam> cb(CallbackFunctions<TypeParam>::DefaultFunction, &context);
     Callback<TypeParam> cb2(CallbackFunctions<TypeParam>::OtherFunction, &context);
+    EXPECT_NE((long)CallbackFunctions<TypeParam>::DefaultFunction, (long)CallbackFunctions<TypeParam>::OtherFunction);
     ASSERT_FALSE(cb == cb2);
 }
 
