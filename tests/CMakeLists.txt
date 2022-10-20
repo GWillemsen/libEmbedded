@@ -31,6 +31,7 @@ set(TEST_SRC_FILES
   ${TEST_SRC_DIR}/Span.cpp
   ${TEST_SRC_DIR}/Iterator.cpp
   ${TEST_SRC_DIR}/Helpers.cpp
+  ${TEST_SRC_DIR}/Optional.cpp
   ${TEST_SRC_DIR}/Callback/CallbackCommon.cpp
   ${TEST_SRC_DIR}/Callback/NoReturnNoArgs.cpp
   ${TEST_SRC_DIR}/Callback/NoReturnWithArgs.cpp
@@ -47,6 +48,7 @@ set(TEST_SRC_FILES
 )
 set(TEST_HEADER_FILES
   ${TEST_SRC_DIR}/CallbackHelper.h
+  ${TEST_SRC_DIR}/CustomHelper.h
 )
 
 add_executable(tests ${TEST_SRC_FILES} ${TEST_HEADER_FILES})
