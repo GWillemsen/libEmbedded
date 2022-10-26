@@ -7,7 +7,8 @@
  * @version 0.3 2022-05-28 Added ExtractBits helper.
  * @version 0.4 2022-05-28 Added GetCombinedValue & CombineBitValues helper.
  * @version 0.5 2022-06-07 Added HasFlagSet to be able to quickly check what bits are set.
- * @date 2022-06-07
+ * @version 0.5 2022-10-26 CreateMask has start position parameter and new helpers for creating bit values.
+ * @date 2022-10-26
  *
  * @copyright Copyright (c) 2022
  *
@@ -31,7 +32,7 @@ namespace libEmbedded
          * @return T The resulting mask.
          */
         template<typename T = int>
-        constexpr T CreateMask(size_t bitLength)
+        constexpr T CreateMask(size_t bitLength, size_t startAtBit = 0)
         {
             T value = 0;
             for (size_t i = 0; i < bitLength; i++)
@@ -39,43 +40,44 @@ namespace libEmbedded
                 value <<= 1;
                 value |= 1;
             }
+            value = value << startAtBit;
             return value;
         }
 
         template<>
-        constexpr uint8_t CreateMask(size_t bitLength)
+        constexpr uint8_t CreateMask(size_t bitLength, size_t startAtBit)
         {
-            return ((uint_least16_t)1 << bitLength) - 1;
+            return (((uint_least16_t)1 << bitLength) - 1) << startAtBit;
         }
 
         template<>
-        constexpr uint16_t CreateMask(size_t bitLength)
+        constexpr uint16_t CreateMask(size_t bitLength, size_t startAtBit)
         {
-            return ((uint_least32_t)1 << bitLength) - 1;
+            return (((uint_least32_t)1 << bitLength) - 1) << startAtBit;
         }
 
         template<>
-        constexpr uint32_t CreateMask(size_t bitLength)
+        constexpr uint32_t CreateMask(size_t bitLength, size_t startAtBit)
         {
-            return ((uint_least64_t)1 << bitLength) - 1;
+            return (((uint_least64_t)1 << bitLength) - 1) << startAtBit;
         }
 
         template<>
-        constexpr int8_t CreateMask(size_t bitLength)
+        constexpr int8_t CreateMask(size_t bitLength, size_t startAtBit)
         {
-            return ((int_least16_t)1 << bitLength) - 1;
+            return (((int_least16_t)1 << bitLength) - 1) << startAtBit;
         }
 
         template<>
-        constexpr int16_t CreateMask(size_t bitLength)
+        constexpr int16_t CreateMask(size_t bitLength, size_t startAtBit)
         {
-            return ((int_least32_t)1 << bitLength) - 1;
+            return (((int_least32_t)1 << bitLength) - 1) << startAtBit;
         }
 
         template<>
-        constexpr int32_t CreateMask(size_t bitLength)
+        constexpr int32_t CreateMask(size_t bitLength, size_t startAtBit)
         {
-            return ((int_least64_t)1 << bitLength) - 1;
+            return (((int_least64_t)1 << bitLength) - 1) << startAtBit;
         }
 
         /**
@@ -146,7 +148,6 @@ namespace libEmbedded
         {
             constexpr size_t kBitsInT1 = GetBitSize<T1>();
             constexpr size_t kBitsInT2 = GetBitSize<T2>();
-            constexpr size_t kBitsInT3 = GetBitSize<T3>();
 
             const bool kSkipVal1            = startOffsetBits > kBitsInT1;
             const size_t kBitsIn1           = kSkipVal1 ? 0 : kBitsInT1 - startOffsetBits;
@@ -216,6 +217,49 @@ namespace libEmbedded
         constexpr bool HasFlagSet(T value, size_t position, size_t position2, TPositions... positions)
         {
             return HasFlagSet(value, position) && HasFlagSet(value, position2, positions...);
+        }
+    
+        /**
+         * @brief Set the given value at the start position for length bits in the startValue.
+         * 
+         * @tparam T1 THe type of value to extract bits from.
+         * @tparam T2 The type of the resulting value;
+         * @param startValue The initial value to start out with.
+         * @param value The value to extract bits from.
+         * @param start The position in startValue to start inserting the bits from value.
+         * @param length The number of bits to extract from value.
+         * @return constexpr T2 The startValue but then with the new bits overwritten.
+         */
+        template<typename T1, typename T2>
+        constexpr T2 SetBits(T2 startValue, T1 value, size_t start, size_t length)
+        {
+            return (startValue & ~CreateMask<T2>(length, start)) | ((T2)(value & CreateMask<T1>(length)) << start);
+        }
+
+        /**
+         * @brief Set the given value at the start position for length bits in the startValue.
+         * 
+         * NOTE: The bits are set from right to left (so value2 is set before value, and value3 before value2)!
+         * 
+         * NOTE: Params must be given in multiples of 3 (value, start and length).
+         * 
+         * @tparam T1 The type of value to extract bits from.
+         * @tparam T2 The type of the resulting value;
+         * @tparam TOthers The type of the other params.
+         * @param startValue The initial value to start out with.
+         * @param value The value to extract bits from.
+         * @param start The position in startValue to start inserting the bits from value.
+         * @param length The number of bits to extract from value.
+         * @param value2 The value to extract bits from.
+         * @param start2 The position in startValue to start inserting the bits from value.
+         * @param length2 The number of bits to extract from the second value.
+         * @param n The other sets of value, start and length.
+         * @return constexpr T2 The startValue but then with the new bits overwritten.
+         */
+        template<typename T1, typename T2, typename ...TOthers>
+        constexpr T2 SetBits(T2 startValue, T1 value, size_t start, size_t length, T1 value2, size_t start2, size_t length2, TOthers... n)
+        {
+            return SetBits(SetBits(startValue, value2, start2, length2, n...), value, start, length);
         }
     } // namespace bits
 } // namespace libEmbedded

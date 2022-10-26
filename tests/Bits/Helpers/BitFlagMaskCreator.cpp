@@ -2,53 +2,76 @@
 #include "libEmbedded/bits/Helpers.h"
 
 using libEmbedded::bits::CreateFlagSet;
+using libEmbedded::bits::CreateMask;
 using libEmbedded::bits::HasFlagSet;
 
-class BitMaskCreatorFixture : public ::testing::Test {};
+TEST(BitMaskCreatorFixture, CreateMask10WithoutStartOffset)
+{
+    uint16_t mask = CreateMask(10);
+    ASSERT_EQ(0b1111111111, mask);
+}
 
-TEST_F(BitMaskCreatorFixture, SinglePositionArgInRangeOfType)
+TEST(BitMaskCreatorFixture, CreateMask5WithoutStartOffset)
+{
+    uint16_t mask = CreateMask(5);
+    ASSERT_EQ(0b11111, mask);
+}
+
+TEST(BitMaskCreatorFixture, CreateMask10WithStartOf5)
+{
+    uint16_t mask = CreateMask(10, 5);
+    ASSERT_EQ(0b111111111100000, mask);
+}
+
+TEST(BitMaskCreatorFixture, CreateMask5WithStartOf5)
+{
+    uint16_t mask = CreateMask(5, 5);
+    ASSERT_EQ(0b1111100000, mask);
+}
+
+TEST(BitFlagCreatorFixture, SinglePositionArgInRangeOfType)
 {
     uint8_t flags = CreateFlagSet<uint8_t, 5>();
     ASSERT_EQ((1 << 5), flags);
 }
 
-TEST_F(BitMaskCreatorFixture, SinglePositionArgOutRangeOfType)
+TEST(BitFlagCreatorFixture, SinglePositionArgOutRangeOfType)
 {
     uint16_t flags = CreateFlagSet<uint16_t, 17>();
     ASSERT_EQ(0, flags);
 }
 
-TEST_F(BitMaskCreatorFixture, TwoPositionArgOutRangeOfType)
+TEST(BitFlagCreatorFixture, TwoPositionArgOutRangeOfType)
 {
     uint16_t flags = CreateFlagSet<uint16_t, 17, 18, 19>();
     ASSERT_EQ(0, flags);
 }
 
-TEST_F(BitMaskCreatorFixture, TwoPositionArgOutRangeOfTypeSomeInRange)
+TEST(BitFlagCreatorFixture, TwoPositionArgOutRangeOfTypeSomeInRange)
 {
     uint16_t flags = CreateFlagSet<uint16_t, 17, 15>();
     ASSERT_EQ((1 << 15), flags);
 }
 
-TEST_F(BitMaskCreatorFixture, TwoPositionArgInRange)
+TEST(BitFlagCreatorFixture, TwoPositionArgInRange)
 {
     uint16_t flags = CreateFlagSet<uint16_t, 15, 2>();
     ASSERT_EQ((1 << 15) | (1 << 2), flags);
 }
 
-TEST_F(BitMaskCreatorFixture, MultiplePositionArgOutRangeOfType)
+TEST(BitFlagCreatorFixture, MultiplePositionArgOutRangeOfType)
 {
     uint16_t flags = CreateFlagSet<uint16_t, 17, 18, 19>();
     ASSERT_EQ(0, flags);
 }
 
-TEST_F(BitMaskCreatorFixture, MultiplePositionArgOutRangeOfTypeSomeInRange)
+TEST(BitFlagCreatorFixture, MultiplePositionArgOutRangeOfTypeSomeInRange)
 {
     uint16_t flags = CreateFlagSet<uint16_t, 17, 18, 19, 8, 10, 16>();
     ASSERT_EQ((1 << 8) | (1 << 10), flags);
 }
 
-TEST_F(BitMaskCreatorFixture, MultiplePositionArgInRange)
+TEST(BitFlagCreatorFixture, MultiplePositionArgInRange)
 {
     uint16_t flags = CreateFlagSet<uint16_t, 15, 2, 8, 10>();
     ASSERT_EQ((1 << 15) | (1 << 2) |(1 << 8) | (1 << 10), flags);

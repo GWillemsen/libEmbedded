@@ -44,7 +44,8 @@ set(TEST_SRC_FILES
   ${TEST_SRC_DIR}/Buffer/Comparison.cpp
   ${TEST_SRC_DIR}/Bits/Helpers/Helpers.cpp
   ${TEST_SRC_DIR}/Bits/Helpers/BitCombinerHelpers.cpp
-  ${TEST_SRC_DIR}/Bits/Helpers/BitMaskCreator.cpp
+  ${TEST_SRC_DIR}/Bits/Helpers/BitFlagMaskCreator.cpp
+  ${TEST_SRC_DIR}/Bits/Helpers/SetBits.cpp
 )
 set(TEST_HEADER_FILES
   ${TEST_SRC_DIR}/CallbackHelper.h
