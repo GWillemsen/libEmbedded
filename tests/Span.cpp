@@ -1,9 +1,8 @@
 #include <gtest/gtest.h>
 #include "libEmbedded/Span.h"
+#include "libEmbedded/Iterator.h"
 #include <limits.h>
 #include <array>
-#include <iterator>
-#include <type_traits>
 
 using libEmbedded::Span;
 constexpr size_t kArraySize = 5;
@@ -153,6 +152,61 @@ TEST_F(SpanFixture, AssignValueUsingIndexOperator)
     ASSERT_EQ(3, span[2]);
     ASSERT_EQ(90, span[3]);
     ASSERT_EQ(UINT8_MAX, span[4]);
+}
+
+TEST_F(SpanFixture, ImplicitConversionToConst)
+{
+    auto ab = [](Span<const uint8_t, uint8_t*, const uint8_t*> span) -> Span<const uint8_t> {
+        return span;
+    };
+    uint8_t data[] = { 10, 20, 30, 40};
+    SpanT span(data, 4);
+    Span<const uint8_t> newSpan = ab(span);
+    EXPECT_EQ(10, data[0]);
+    EXPECT_EQ(20, data[1]);
+    EXPECT_EQ(30, data[2]);
+    EXPECT_EQ(40, data[3]);
+    EXPECT_EQ(10, newSpan[0]);
+    EXPECT_EQ(20, newSpan[1]);
+    EXPECT_EQ(30, newSpan[2]);
+    EXPECT_EQ(40, newSpan[3]);
+    EXPECT_EQ(4, libEmbedded::Distance(span));
+    EXPECT_EQ(4, libEmbedded::Distance(newSpan));
+}
+
+TEST_F(SpanFixture, ExplicitConversionToConst)
+{
+    uint8_t data[] = { 10, 20, 30, 40};
+    SpanT span(data, 4);
+    Span<const uint8_t> newSpan = Span<const uint8_t>(nullptr, nullptr);
+    newSpan = (Span<const uint8_t>)span;
+    EXPECT_EQ(10, data[0]);
+    EXPECT_EQ(20, data[1]);
+    EXPECT_EQ(30, data[2]);
+    EXPECT_EQ(40, data[3]);
+    EXPECT_EQ(10, newSpan[0]);
+    EXPECT_EQ(20, newSpan[1]);
+    EXPECT_EQ(30, newSpan[2]);
+    EXPECT_EQ(40, newSpan[3]);
+    EXPECT_EQ(4, libEmbedded::Distance(span));
+    EXPECT_EQ(4, libEmbedded::Distance(newSpan));
+}
+
+TEST_F(SpanFixture, ConstructorConversionToConst)
+{
+    uint8_t data[] = { 10, 20, 30, 40};
+    SpanT span(data, 4);
+    Span<const uint8_t> newSpan = span;
+    EXPECT_EQ(10, data[0]);
+    EXPECT_EQ(20, data[1]);
+    EXPECT_EQ(30, data[2]);
+    EXPECT_EQ(40, data[3]);
+    EXPECT_EQ(10, newSpan[0]);
+    EXPECT_EQ(20, newSpan[1]);
+    EXPECT_EQ(30, newSpan[2]);
+    EXPECT_EQ(40, newSpan[3]);
+    EXPECT_EQ(4, libEmbedded::Distance(span));
+    EXPECT_EQ(4, libEmbedded::Distance(newSpan));
 }
 
 TYPED_TEST(SpanTFixture, SpanEqualCopyConstructorCopy)

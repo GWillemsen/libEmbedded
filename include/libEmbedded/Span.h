@@ -14,7 +14,8 @@
  * @version 0.10 2022-06-07 Span constructors now all constexpr + non-const iterator using defined on Span<const T>
  * @version 0.11 2022-06-09 Distance, Next and Prev are now single statement constexpr functions (but they are recursive now) for stricter C++11 compliance.
  * @version 0.12 2022-06-14 Moved iterator helpers to own Iterator.h file.
- * @date 2022-06-14
+ * @version 0.13 2022-10-24 Implicit conversion from non-const to const is now possible with new TypeTrait helpers.
+ * @date 2022-10-24
  *
  * @copyright Copyright (c) 2022
  *
@@ -25,6 +26,7 @@
 
 #include <stddef.h>
 #include "math.h"
+#include "libEmbedded/TypeTrait.h"
 
 namespace libEmbedded
 {
@@ -35,7 +37,7 @@ namespace libEmbedded
      * @tparam TIterator The iterator used to do a modifiable iteration.
      * @tparam TConstIterator The iterator used to do a readonly iteration.
      */
-    template <typename T, typename TIterator = T*, typename TConstIterator = const T*>
+    template <typename T, typename TIterator = typename ::libEmbedded::remove_const<typename ::libEmbedded::remove_pointer<T>::type>::type*, typename TConstIterator = typename ::libEmbedded::add_const<typename ::libEmbedded::remove_pointer<T>::type>::type*>
     // I found no better alternative because if you do TConstIterator = const TIterator, using const_iterator = TConstIterator will complain because you made the whole iterator const not just the T. 
     struct Span
     {
@@ -210,6 +212,13 @@ namespace libEmbedded
         {
             return this->spanStart != other.spanStart || this->spanEnd != other.spanEnd;
         }
+
+        /**
+         * @brief Convert the current Span into a const variant of the same type.
+         * 
+         * @return Span<const T, TConstIterator, TConstIterator> The const version of this span.
+         */
+        operator Span<const T, TConstIterator, TConstIterator>() const;
     };
 
     /**
@@ -225,7 +234,7 @@ namespace libEmbedded
         friend Span<T, TIterator, TConstIterator>;
     public:
         using const_iterator = TConstIterator;
-        using iterator = TIterator;
+        using iterator = const_iterator;
     private:
 
     public:
@@ -370,6 +379,13 @@ namespace libEmbedded
             return this->spanStart != other.spanStart || this->spanEnd != other.spanEnd;
         }
     };
+
+    // Have implementation after specialization so the specialization is used for sure.
+    template<typename T, typename TIterator, typename TConstIterator>
+    Span<T, TIterator, TConstIterator>::operator Span<const T, TConstIterator, TConstIterator>() const
+    {
+        return Span<const T, const TIterator, TConstIterator>(spanStart, spanEnd);
+    } 
 } // namespace libEmbedded
 
 #endif // LIBEMBEDDED_SPAN_H
