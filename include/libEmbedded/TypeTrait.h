@@ -3,7 +3,8 @@
  * @author Giel Willemsen
  * @brief Some reimplementations of the STL type_trait headers.
  * @version 0.1 2022-10-23 Initial version
- * @date 2022-10-23
+ * @version 0.2 2022-10-27 If you try to reimplement the std don't depend on the std.  is_member_object_pointer inherited from std::integral_constant
+ * @date 2022-10-27
  *
  * @copyright Copyright (c) 2022
  *
@@ -108,7 +109,7 @@ namespace libEmbedded
     template<typename T, typename U> struct is_member_function_pointer_helper<T U::*> : is_function<T> {};
     template<typename T > struct is_member_function_pointer : is_member_function_pointer_helper<typename remove_cv<T>::type> {};
 
-    template<typename T> struct is_member_object_pointer : std::integral_constant<bool, is_member_pointer<T>::value && !is_member_function_pointer<T>::value> {};
+    template<typename T> struct is_member_object_pointer : integral_constant<bool, is_member_pointer<T>::value && !is_member_function_pointer<T>::value> {};
 
     // Property queries
     template< typename T > struct alignment_of : integral_constant<size_t, alignof(T)> {};

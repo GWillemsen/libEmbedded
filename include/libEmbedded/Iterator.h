@@ -3,7 +3,8 @@
  * @author Giel Willemsen
  * @brief Helpers for dealing with iterators.
  * @version 0.1 2022-06-14 Imported iterator helpers from Span.h and added a FindStartOf helper to search in iterators.
- * @date 2022-06-14
+ * @version 0.2 2022-10-28 Depend on own type_trait library and don't expect others to include type_trait for us.
+ * @date 2022-10-28
  *
  * @copyright Copyright (c) 2022
  *
@@ -12,6 +13,8 @@
 #ifndef LIBEMBEDDED_ITERATOR_H
 #define LIBEMBEDDED_ITERATOR_H
 #include "stddef.h"
+#include "libEmbedded/TypeTrait.h"
+
 namespace libEmbedded
 {
     /**
@@ -153,7 +156,7 @@ namespace libEmbedded
     template <typename TContainer, typename TIter>
     bool FindStartOf(const TContainer &container, TIter keyStart, TIter keyEnd, TIter &foundAt)
     {
-        static_assert(std::is_same<typename TContainer::const_iterator, TIter>::value, "The iterator type of the foundAt value is not the same as the container iterator.");
+        static_assert(libEmbedded::is_same<typename TContainer::const_iterator, TIter>::value, "The iterator type of the foundAt value is not the same as the container iterator.");
         return FindStartOf(container.begin(), container.end(), keyStart, keyEnd, foundAt);
     }
 
@@ -172,8 +175,8 @@ namespace libEmbedded
     template <typename THayContainer, typename TKeyContainer, typename TIter>
     bool FindStartOf(const THayContainer &container, const TKeyContainer &key, TIter &foundAt)
     {
-        static_assert(std::is_same<typename THayContainer::const_iterator, typename TKeyContainer::const_iterator>::value, "The iterator of the hay container and the key container should be the same.");
-        static_assert(std::is_same<typename THayContainer::const_iterator, TIter>::value, "The iterator type of the foundAt value is not the same as the container iterator.");
+        static_assert(libEmbedded::is_same<typename THayContainer::const_iterator, typename TKeyContainer::const_iterator>::value, "The iterator of the hay container and the key container should be the same.");
+        static_assert(libEmbedded::is_same<typename THayContainer::const_iterator, TIter>::value, "The iterator type of the foundAt value is not the same as the container iterator.");
         return FindStartOf(container.begin(), container.end(), key.begin(), key.end(), foundAt);
     }
 } // namespace libEmbedded
