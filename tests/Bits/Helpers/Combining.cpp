@@ -1,7 +1,16 @@
 #include "gtest/gtest.h"
-#include "libEmbedded/bits/Helpers.h"
+#include "libEmbedded/bits/Combining.h"
 
+using libEmbedded::bits::CombineBitValues;
 using libEmbedded::bits::SetBits;
+
+TEST(BitValueCombineHelpers, CombineBitValue)
+{
+    const uint8_t kVal1 = 0b10101010;
+    const uint8_t kVal2 = 0b1010010;
+    const uint8_t kResul = 0b01001010;
+    EXPECT_EQ(kResul, (CombineBitValues<uint8_t,uint8_t,uint16_t>(kVal1, kVal2, 0, 3, 1, 5)));
+}
 
 TEST(BitSetter, Set1ValueWithInitial)
 {

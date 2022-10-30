@@ -42,10 +42,11 @@ set(TEST_SRC_FILES
   ${TEST_SRC_DIR}/Buffer/Iterators.cpp
   ${TEST_SRC_DIR}/Buffer/AssignmentConstructor.cpp
   ${TEST_SRC_DIR}/Buffer/Comparison.cpp
-  ${TEST_SRC_DIR}/Bits/Helpers/Helpers.cpp
-  ${TEST_SRC_DIR}/Bits/Helpers/BitCombinerHelpers.cpp
-  ${TEST_SRC_DIR}/Bits/Helpers/BitFlagMaskCreator.cpp
-  ${TEST_SRC_DIR}/Bits/Helpers/SetBits.cpp
+  ${TEST_SRC_DIR}/Bits/Helpers/Util.cpp
+  ${TEST_SRC_DIR}/Bits/Helpers/Combining.cpp
+  ${TEST_SRC_DIR}/Bits/Helpers/Extracting.cpp
+  ${TEST_SRC_DIR}/Bits/Helpers/Masking.cpp
+  ${TEST_SRC_DIR}/Bits/Helpers/Flags.cpp
 )
 set(TEST_HEADER_FILES
   ${TEST_SRC_DIR}/CallbackHelper.h

@@ -18,7 +18,10 @@ set(${PROJECT_NAME}_HEADERS
         ${${PROJECT_NAME}_HEADERS_DIR}/TypeTrait.h
         ${${PROJECT_NAME}_HEADERS_DIR}/Span.h
         ${${PROJECT_NAME}_HEADERS_DIR}/Helpers.h
-        ${${PROJECT_NAME}_HEADERS_DIR}/bits/Helpers.h
+        ${${PROJECT_NAME}_HEADERS_DIR}/bits/Flags.h
+        ${${PROJECT_NAME}_HEADERS_DIR}/bits/Masking.h
+        ${${PROJECT_NAME}_HEADERS_DIR}/bits/Combining.h
+        ${${PROJECT_NAME}_HEADERS_DIR}/bits/Extracting.h
 )
         
 set(${PROJECT_NAME}_SOURCES
