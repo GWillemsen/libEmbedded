@@ -3,12 +3,15 @@
  * @author Giel Willemsen
  * @brief Some helper functions for combing (sets of) bits.
  * @version 0.1 2022-10-28 Extract from original bits/helper.h file.
- * @version 0.1 2022-10-30 Added missing header + drop redundant GetCombinedValue (replaced by more versatile SetBits)
+ * @version 0.2 2022-10-30 Added missing header + drop redundant GetCombinedValue (replaced by more versatile SetBits)
+ * @version 0.3 2022-10-30 CombineBitValues is now single statement (C++11 conformity).
+ * @version 0.4 2022-10-30 Variadic template argument simplification + added usage examples
  * @date 2022-10-30
  *
  * @copyright Copyright (c) 2022
  *
  */
+
 #pragma once
 #ifndef LIBEMBEDDED_BITS_HELPERS_H
 #define LIBEMBEDDED_BITS_HELPERS_H
@@ -42,14 +45,18 @@ namespace libEmbedded
         template<typename T1, typename T2, typename T3>
         constexpr T3 CombineBitValues(T1 value1, T2 value2, size_t offsetValue1, size_t bitsFrom1, size_t offsetValue2, size_t bitsFrom2)
         {
-            const T3 kValueFrom1 = (value1 >> offsetValue1) & CreateMask(bitsFrom1);
-            const T3 kValueFrom2 = (value2 >> offsetValue2) & CreateMask(bitsFrom2);
             return ExtractBits(value1, offsetValue1, bitsFrom1) | (ExtractBits(value2, offsetValue2, bitsFrom2) << bitsFrom1);
         }
 
-
         /**
          * @brief Set the given value at the start position for length bits in the startValue.
+         * The bits don't need to be aligned, setting 11 bits starting at bit 3 is possible.
+         * 
+         * Usage:
+         * @code 
+         * uint32_t a = SetBits(0xF, 0xA, 0, 8); // < results in 0x0A
+         * uint32_t b = SetBits(0xF, 0x3, 6, 4); // < results in 0xCF
+         * @endcode
          * 
          * @tparam T1 THe type of value to extract bits from.
          * @tparam T2 The type of the resulting value;
@@ -67,10 +74,15 @@ namespace libEmbedded
 
         /**
          * @brief Set the given value at the start position for length bits in the startValue.
-         * 
+         * The bits don't need to be aligned, setting 11 bits starting at bit 3 is possible.
          * NOTE: The bits are set from right to left (so value2 is set before value, and value3 before value2)!
-         * 
          * NOTE: Params must be given in multiples of 3 (value, start and length).
+         * 
+         * Usage:
+         * @code 
+         * uint32_t a = SetBits(0xF, 0xA, 0, 8, 0x3, 10, 2); // < results in 0xC0A
+         * uint32_t b = SetBits(0xF, 0xA, 0, 8, 0x3, 10, 2, 0xC, 16, 4); // < results in 0xC0C0A
+         * @endcode
          * 
          * @tparam T1 The type of value to extract bits from.
          * @tparam T2 The type of the resulting value;
@@ -79,16 +91,13 @@ namespace libEmbedded
          * @param value The value to extract bits from.
          * @param start The position in startValue to start inserting the bits from value.
          * @param length The number of bits to extract from value.
-         * @param value2 The value to extract bits from.
-         * @param start2 The position in startValue to start inserting the bits from value.
-         * @param length2 The number of bits to extract from the second value.
          * @param n The other sets of value, start and length.
          * @return constexpr T2 The startValue but then with the new bits overwritten.
          */
         template<typename T1, typename T2, typename ...TOthers>
-        constexpr T2 SetBits(T2 startValue, T1 value, size_t start, size_t length, T1 value2, size_t start2, size_t length2, TOthers... n)
+        constexpr T2 SetBits(T2 startValue, T1 value, size_t start, size_t length, TOthers... n)
         {
-            return SetBits(SetBits(startValue, value2, start2, length2, n...), value, start, length);
+            return SetBits(SetBits(startValue, n...), value, start, length);
         }
     } // namespace bits
 } // namespace libEmbedded

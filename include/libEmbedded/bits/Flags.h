@@ -4,6 +4,7 @@
  * @brief Some helper functions for helping with bit flags.
  * @version 0.1 2022-10-28 Extract from original bits/helper.h file.
  * @version 0.2 2022-10-30 Added new helper to create flags from regular argument and not template args.
+ * @version 0.3 2022-10-30 Variadic template argument simplification + added usage examples
  * @date 2022-10-30
  *
  * @copyright Copyright (c) 2022
@@ -21,6 +22,12 @@ namespace libEmbedded
         /**
          * @brief Create a value with the bit at the given position set.
          * 
+         * Usage:
+         * @code 
+         * uint8_t a = CreateFlagSet<uint8_t>(4);
+         * // a == 0x8
+         * @endcode
+         * 
          * @tparam T The type to create the mask in.
          * @tparam T2 The type of the value that provides the index of the bit to set.
          * @param position The index of the bit to set.
@@ -33,23 +40,13 @@ namespace libEmbedded
         }
 
         /**
-         * @brief Create a  value with the given bit indexes set.
+         * @brief Create a value with the given bit indexes set.
          * 
-         * @tparam T The type of the value to set the bits in.
-         * @tparam T2 The type of the first index value.
-         * @tparam T3 The type of the second index value.
-         * @param position1 The position of the first bit to set.
-         * @param position2 The position of the second bit to set.
-         * @return constexpr T The resulting value with the two bits set.
-         */
-        template<typename T, typename T2, typename T3>
-        constexpr T CreateFlagSet(T2 position1, T3 position2)
-        {
-            return CreateFlagSet<T>(position1) | CreateFlagSet<T>(position2);
-        }
-
-        /**
-         * @brief Create a  value with the given bit indexes set.
+         * Usage:
+         * @code 
+         * uint8_t a = CreateFlagSet<uint8_t>(4, 5);
+         * // a == 0x18
+         * @endcode
          * 
          * @tparam T The type of the value to set the bits in.
          * @tparam T2 The type of the first index value.
@@ -67,6 +64,12 @@ namespace libEmbedded
         /**
          * @brief Create a value with the bit at the given position set.
          * 
+         * Usage:
+         * @code 
+         * uint8_t a = CreateFlagSet<uint8_t, 4>();
+         * // a == 0x8
+         * @endcode
+         * 
          * @tparam T The type to create the mask in.
          * @param TPosition The position of the bit to set.
          * @return constexpr T The resulting value with the bit at position set.
@@ -79,6 +82,12 @@ namespace libEmbedded
 
         /**
          * @brief Create a value with the bit at the given positions set.
+         * 
+         * Usage:
+         * @code 
+         * uint8_t a = CreateFlagSet<uint8_t, 4, 5>();
+         * // a == 0x18
+         * @endcode
          * 
          * @tparam T The type to create the mask in.
          * @tparam TPosition1 Position of the first bit position 1 to set.
@@ -95,6 +104,14 @@ namespace libEmbedded
         /**
          * @brief Check if the bit at position in value is set.
          * 
+         * Usage:
+         * @code 
+         * bool a = HasFlagSet(0x18, 0x8);
+         * bool b = HasFlagSet(0x18, 0x4);
+         * // a == true
+         * // b == false
+         * @endcode
+         * 
          * @tparam T The type of the value to check the bit in.
          * @param value The vale to check the bit in.
          * @param position The 0-indexed bit position to check.
@@ -102,7 +119,7 @@ namespace libEmbedded
          * @return false If the bit was cleared.
          */
         template<typename T>
-        constexpr bool HasFlagSet(T value,size_t position)
+        constexpr bool HasFlagSet(T value, size_t position)
         {
             return (value & ((T)1 << position)) != 0;
         }
@@ -110,19 +127,26 @@ namespace libEmbedded
         /**
          * @brief Checks if all the given bit indexes are set in the value.
          * 
+         * Usage:
+         * @code 
+         * bool a = HasFlagSet(0x18, 0x8, 0x1);
+         * bool b = HasFlagSet(0x18, 0x4, 0x1);
+         * // a == true
+         * // b == false
+         * @endcode
+         * 
          * @tparam T The type of the value to check the bits in.
          * @tparam TPositions The type of the bit indexes to check.
          * @param value The value to check the bits in.
          * @param position The 0-index of the first bit to check.
-         * @param position2 The 0-index of the second bit to check.
          * @param positions The 0-index of any optional other bits to check.
          * @return true If all the bits are set.
          * @return false If one or all of the bits are cleared.
          */
         template<typename T, typename ...TPositions>
-        constexpr bool HasFlagSet(T value, size_t position, size_t position2, TPositions... positions)
+        constexpr bool HasFlagSet(T value, size_t position, TPositions... positions)
         {
-            return HasFlagSet(value, position) && HasFlagSet(value, position2, positions...);
+            return HasFlagSet(value, position) && HasFlagSet(value, positions...);
         }
     } // namespace bits
 } // namespace libEmbedded
