@@ -3,7 +3,8 @@
  * @author Giel Willemsen
  * @brief Some helper functions for combing (sets of) bits.
  * @version 0.1 2022-10-28 Extract from original bits/helper.h file.
- * @date 2022-10-28
+ * @version 0.1 2022-10-30 Added missing header + drop redundant GetCombinedValue (replaced by more versatile SetBits)
+ * @date 2022-10-30
  *
  * @copyright Copyright (c) 2022
  *
@@ -12,6 +13,7 @@
 #ifndef LIBEMBEDDED_BITS_HELPERS_H
 #define LIBEMBEDDED_BITS_HELPERS_H
 #include <stddef.h>
+#include <stdint.h>
 
 #include "libEmbedded/bits/Masking.h"
 #include "libEmbedded/bits/Extracting.h"
@@ -44,33 +46,7 @@ namespace libEmbedded
             const T3 kValueFrom2 = (value2 >> offsetValue2) & CreateMask(bitsFrom2);
             return ExtractBits(value1, offsetValue1, bitsFrom1) | (ExtractBits(value2, offsetValue2, bitsFrom2) << bitsFrom1);
         }
-   
-        /**
-         * @brief Read value 1 & 2 as a continuous memory section in essence and extract nrOfBits bits starting at startOffsetBits from them.
-         * 
-         * @tparam T1 The type of the first value.
-         * @tparam T2 The type of the second value.
-         * @tparam T3 The return value type (decides how many bits can be returned!)
-         * @param value1 The value to start extracting bits from.
-         * @param value2 The second place to start extracting from if not enough bits in value 1.
-         * @param startOffsetBits At what offset to start extracting bits in value 1.
-         * @param nrOfBits The total number of bits to extract ()
-         * @return constexpr T3 
-         */
-        template<typename T1, typename T2, typename T3 = uint32_t>
-        constexpr T3 GetCombinedValue(T1 value1, T2 value2, size_t startOffsetBits, size_t nrOfBits)
-        {
-            constexpr size_t kBitsInT1 = GetBitSize<T1>();
-            constexpr size_t kBitsInT2 = GetBitSize<T2>();
 
-            const bool kSkipVal1            = startOffsetBits > kBitsInT1;
-            const size_t kBitsIn1           = kSkipVal1 ? 0 : kBitsInT1 - startOffsetBits;
-            const size_t kBitsOffsetValue1  = kSkipVal1 ? 0 : startOffsetBits;
-            const size_t kBitsOffsetValue2  = kSkipVal1 ? startOffsetBits - kBitsInT1 : 0;
-            const size_t kBitsLeftAfterVal1 = nrOfBits - kBitsIn1;
-            const size_t kBitsFrom2         = kBitsLeftAfterVal1 > kBitsInT2 ? kBitsInT2 : kBitsLeftAfterVal1;
-            return CombineBitValues<T1, T2, T3>(value1, value2, kBitsOffsetValue1, kBitsIn1, kBitsOffsetValue2, kBitsFrom2);
-        }
 
         /**
          * @brief Set the given value at the start position for length bits in the startValue.
