@@ -3,7 +3,8 @@
  * @author Giel Willemsen
  * @brief Some helper functions for helping with masking bits.
  * @version 0.1 2022-10-28 Extract from original bits/helper.h file.
- * @date 2022-10-28
+ * @version 0.2 2022-10-30 CreateMask is now a single statement function as well (+some weird behaviour, implementation defined??, on GCC with bit rolls on uint32_t's<<32 fixed in the process)
+ * @date 2022-10-30
  *
  * @copyright Copyright (c) 2022
  *
@@ -13,11 +14,25 @@
 #define LIBEMBEDDED_BITS_MASKING_H
 #include <stddef.h>
 #include <stdint.h>
+#include "libEmbedded/bits/Util.h"
 
 namespace libEmbedded
 {
     namespace bits
     {
+        /**
+         * @brief Set the count number of bits in the value.
+         * 
+         * @tparam T The type to set the bits in.
+         * @param count The number of bits to set from the start.
+         * @return constexpr T The value with count number of bits set.
+         */
+        template<typename T>
+        constexpr T SetNrBits(size_t count)
+        {
+            return (count > 0 ? (1 | SetNrBits<T>(count - 1) << 1) : 0);
+        }
+
         /**
          * @brief Create a mask of bitLength bits for type T.
          * 
@@ -28,14 +43,7 @@ namespace libEmbedded
         template<typename T = int>
         constexpr T CreateMask(size_t bitLength, size_t startAtBit = 0)
         {
-            T value = 0;
-            for (size_t i = 0; i < bitLength; i++)
-            {
-                value <<= 1;
-                value |= 1;
-            }
-            value = value << startAtBit;
-            return value;
+            return SetNrBits<T>(bitLength) << startAtBit;
         }
 
         template<>
