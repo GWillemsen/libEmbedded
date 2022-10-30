@@ -49,6 +49,13 @@ target_compile_features(${PROJECT_NAME}
         cxx_std_11
 )
 
+if (MSVC)
+    message(WARNING "The lowest C++ version we can enforce for MSVC is C++14 so just take it and hope for the best.")
+    target_compile_options(${PROJECT_NAME} PRIVATE "/std:c++14")
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE "--std=c++11")
+endif()
+
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "debug")
 endif()

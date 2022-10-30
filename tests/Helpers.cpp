@@ -15,7 +15,14 @@ struct DivisionHelperStruct
         value(value), divider(divider), flt_result(flt_result), int_result(int_result)
     {
     }
+    friend std::ostream & operator << (std::ostream &out, const DivisionHelperStruct &c);
 };
+
+std::ostream & operator << (std::ostream &out, const DivisionHelperStruct &c)
+{
+    out << "{" << c.value << "/" << c.divider << ":" << c.flt_result << ";" << c.int_result << "}";
+    return out;
+}
 
 class DivideByAndRoundUpHelperFixture : public ::testing::TestWithParam<DivisionHelperStruct>
 {};
@@ -24,7 +31,7 @@ TEST_P(DivideByAndRoundUpHelperFixture, ExactDivisionInt)
 {
     int32_t kValue = GetParam().value;
     int8_t kDivider = GetParam().divider;
-    int32_t result = DivideByAndRoundUp(kValue, kDivider);
+    int32_t result = DivideByAndRoundUp<int32_t>(kValue, kDivider);
     EXPECT_EQ(GetParam().int_result, result);
 }
 
@@ -40,7 +47,7 @@ TEST_P(DivideByAndRoundUpHelperFixture, RoundUpOnInteger)
 {
     int32_t kValue = GetParam().value;
     int8_t kDivider = GetParam().divider;
-    int32_t result = DivideByAndRoundUp(kValue, kDivider);
+    int32_t result = DivideByAndRoundUp<int32_t>(kValue, kDivider);
     EXPECT_EQ(GetParam().int_result, result);
 }
 
@@ -56,7 +63,7 @@ TEST_P(DivideByAndRoundUpHelperFixture , RoundUpOnInputIntsButResultFloat)
 {
     int16_t kValue = GetParam().value;
     int16_t kDivider = GetParam().divider;
-    double result = DivideByAndRoundUp<int16_t,int16_t,double>(kValue, kDivider);
+    double result = DivideByAndRoundUp<int16_t,double>(kValue, kDivider);
     EXPECT_FLOAT_EQ(GetParam().flt_result, result);
 }
 
@@ -65,7 +72,7 @@ TEST_P(DivideByAndRoundUpHelperFixture , RoundUpOnInputFloatsButResultInt)
     double kValue = GetParam().value;
     double kDivider = GetParam().divider;
 
-    int16_t result = DivideByAndRoundUp<double,double, int16_t>(kValue, kDivider);
+    int16_t result = DivideByAndRoundUp<double, int16_t>(kValue, kDivider);
     EXPECT_EQ(GetParam().int_result, result);
 }
 

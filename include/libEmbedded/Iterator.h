@@ -4,7 +4,8 @@
  * @brief Helpers for dealing with iterators.
  * @version 0.1 2022-06-14 Imported iterator helpers from Span.h and added a FindStartOf helper to search in iterators.
  * @version 0.2 2022-10-28 Depend on own type_trait library and don't expect others to include type_trait for us.
- * @date 2022-10-28
+ * @version 0.3 2022-10-30 More strict C++11.
+ * @date 2022-10-30
  *
  * @copyright Copyright (c) 2022
  *
@@ -54,7 +55,7 @@ namespace libEmbedded
      * @param n The number of times to increment it.
      */
     template <typename TIter>
-    constexpr void Advance(TIter &it, size_t n = 1)
+    void Advance(TIter &it, size_t n = 1)
     {
         while (n > 0)
         {

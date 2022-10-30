@@ -5,7 +5,8 @@
  * @version 0.1 2022-05-22 Initial version
  * @version 0.2 2022-05-28 Cleanup and fixed negative rounding problem.
  * @version 0.3 2022-05-29 Removed dependency on math.h abs function.
- * @date 2022-05-29
+ * @version 0.4 2022-10-30 DivideAndRoundUp is now a single statement (C++11 conformity).
+ * @date 2022-10-30
  *
  * @copyright Copyright (c) 2022
  *
@@ -22,28 +23,24 @@ namespace libEmbedded
      * Note: No floating point math required.
      * 
      * @tparam T The type of value that is divided.
-     * @tparam TDivider The type of the value that is divided by.
+     * @tparam TResult The type of the quotient.
      * @param value The value to divide.
      * @param divider The value to divide by.
      * @return T The quotient that is rounded up to closes value for T. 
      */
-    template<typename T = int, typename TDivider = T, typename TResult = T>
-    constexpr TResult DivideByAndRoundUp(T value, TDivider divider)
+    template<typename T = int, typename TResult = T>
+    TResult DivideByAndRoundUp(T value, T divider)
     {
-        const TResult v = value;
-        const TResult d = divider;
-        const TResult wholeValue = (v / d);
-        const TResult wholeValueD = wholeValue * d;
-        const TResult leftOverValue = v - wholeValueD;
-        TResult partValue = leftOverValue > 0 ? 1 : (leftOverValue < 0 ? 1 : 0);
-        if (((value < 0 && divider > 0) || (value > 0 && divider < 0)))
-        {
-            if (wholeValue <= 0)
-            {
-                partValue = 0;
-            }
-        }
-        return wholeValue + partValue;
+        return 
+            (TResult)((TResult)value / divider) + // Whole
+            (value != ((TResult)((TResult)value / divider) * divider) ? 
+                // If the result is negative and one of the params is negative too
+                // (This also implies the result is negative, but in case the TResult
+                // type can represent negative numbers we still have to check of it,
+                // but we can't only check that because we don't know if it was 0 then)
+                ((((value < 0 && divider > 0) || (value > 0 && divider < 0)) && (((TResult)value / divider) <= 0)) ? 0 : 1)
+                : 0
+            );
     }
 } // namespace libEmbedded
 

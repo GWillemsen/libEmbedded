@@ -56,7 +56,7 @@ TYPED_TEST(CallbackCommonOperationTests, CmpEqualToDifferentFunctionsButSameCont
     Context context;
     Callback<TypeParam> cb(CallbackFunctions<TypeParam>::DefaultFunction, &context);
     Callback<TypeParam> cb2(CallbackFunctions<TypeParam>::OtherFunction, &context);
-    EXPECT_NE((long)CallbackFunctions<TypeParam>::DefaultFunction, (long)CallbackFunctions<TypeParam>::OtherFunction);
+    EXPECT_NE((void*)CallbackFunctions<TypeParam>::DefaultFunction, (void*)CallbackFunctions<TypeParam>::OtherFunction);
     ASSERT_FALSE(cb == cb2);
 }
 
