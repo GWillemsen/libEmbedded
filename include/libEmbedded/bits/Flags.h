@@ -3,7 +3,8 @@
  * @author Giel Willemsen
  * @brief Some helper functions for helping with bit flags.
  * @version 0.1 2022-10-28 Extract from original bits/helper.h file.
- * @date 2022-10-28
+ * @version 0.2 2022-10-30 Added new helper to create flags from regular argument and not template args.
+ * @date 2022-10-30
  *
  * @copyright Copyright (c) 2022
  *
@@ -17,6 +18,52 @@ namespace libEmbedded
 {
     namespace bits
     {
+        /**
+         * @brief Create a value with the bit at the given position set.
+         * 
+         * @tparam T The type to create the mask in.
+         * @tparam T2 The type of the value that provides the index of the bit to set.
+         * @param position The index of the bit to set.
+         * @return constexpr T The resulting value with the bit at position set.
+         */
+        template<typename T, typename T2>
+        constexpr T CreateFlagSet(T2 position)
+        {
+            return ((T)1 << position);
+        }
+
+        /**
+         * @brief Create a  value with the given bit indexes set.
+         * 
+         * @tparam T The type of the value to set the bits in.
+         * @tparam T2 The type of the first index value.
+         * @tparam T3 The type of the second index value.
+         * @param position1 The position of the first bit to set.
+         * @param position2 The position of the second bit to set.
+         * @return constexpr T The resulting value with the two bits set.
+         */
+        template<typename T, typename T2, typename T3>
+        constexpr T CreateFlagSet(T2 position1, T3 position2)
+        {
+            return CreateFlagSet<T>(position1) | CreateFlagSet<T>(position2);
+        }
+
+        /**
+         * @brief Create a  value with the given bit indexes set.
+         * 
+         * @tparam T The type of the value to set the bits in.
+         * @tparam T2 The type of the first index value.
+         * @tparam TOthers The type of the other index values.
+         * @param position The position of the first bit to set.
+         * @param others The positions of the other bits to set.
+         * @return constexpr T The resulting value with the bits set.
+         */
+        template<typename T, typename T2, typename... TOthers>
+        constexpr T CreateFlagSet(T2 position, TOthers... others)
+        {
+            return CreateFlagSet<T>(position) | CreateFlagSet<T>(others...);
+        }
+
         /**
          * @brief Create a value with the bit at the given position set.
          * 

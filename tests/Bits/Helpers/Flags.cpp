@@ -57,6 +57,58 @@ TEST(BitMaskingTemplateArgs, MultiplePositionArgInRange)
 }
 
 ///
+/// CreateFlagSet with regular arguments
+///
+
+TEST(BitMaskingValueArgs, SinglePositionArgInRangeOfType)
+{
+    uint8_t flags = CreateFlagSet<uint8_t>(5);
+    ASSERT_EQ((1 << 5), flags);
+}
+
+TEST(BitMaskingValueArgs, SinglePositionArgOutRangeOfType)
+{
+    uint16_t flags = CreateFlagSet<uint16_t>(17);
+    ASSERT_EQ(0, flags);
+}
+
+TEST(BitMaskingValueArgs, TwoPositionArgOutRangeOfType)
+{
+    uint16_t flags = CreateFlagSet<uint16_t>(17, 18, 19);
+    ASSERT_EQ(0, flags);
+}
+
+TEST(BitMaskingValueArgs, TwoPositionArgOutRangeOfTypeSomeInRange)
+{
+    uint16_t flags = CreateFlagSet<uint16_t>(17, 15);
+    ASSERT_EQ((1 << 15), flags);
+}
+
+TEST(BitMaskingValueArgs, TwoPositionArgInRange)
+{
+    uint16_t flags = CreateFlagSet<uint16_t>(15, 2);
+    ASSERT_EQ((1 << 15) | (1 << 2), flags);
+}
+
+TEST(BitMaskingValueArgs, MultiplePositionArgOutRangeOfType)
+{
+    uint16_t flags = CreateFlagSet<uint16_t>(17, 18, 19);
+    ASSERT_EQ(0, flags);
+}
+
+TEST(BitMaskingValueArgs, MultiplePositionArgOutRangeOfTypeSomeInRange)
+{
+    uint16_t flags = CreateFlagSet<uint16_t>(17, 18, 19, 8, 10, 16);
+    ASSERT_EQ((1 << 8) | (1 << 10), flags);
+}
+
+TEST(BitMaskingValueArgs, MultiplePositionArgInRange)
+{
+    uint16_t flags = CreateFlagSet<uint16_t>(15, 2, 8, 10);
+    ASSERT_EQ((1 << 15) | (1 << 2) |(1 << 8) | (1 << 10), flags);
+}
+
+///
 /// HasFlagSet unit tests
 ///
 
