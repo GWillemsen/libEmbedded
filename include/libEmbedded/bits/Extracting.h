@@ -5,7 +5,8 @@
  * @version 0.1 2022-10-28 Extract from original bits/helper.h file.
  * @version 0.2 2022-10-30 Helper to extract values (ie, a set of bits as 1 value) from a larger value.
  * @version 0.3 2022-10-30 Variadic template argument simplification + added usage examples
- * @date 2022-10-30
+ * @version 0.4 2022-11-13 ExtractBits not working on types larger than native int (CreateMask is type defaulted instead of the T passed along)
+ * @date 2022-11-13
  *
  * @copyright Copyright (c) 2022
  *
@@ -39,7 +40,7 @@ namespace libEmbedded
         template<typename T>
         constexpr T ExtractBits(T value, size_t startAtBit, size_t bitCount)
         {
-            return ((value & CreateMask(bitCount, startAtBit)) >> startAtBit) & CreateMask<T>(bitCount);
+            return ((value & CreateMask<T>(bitCount, startAtBit)) >> startAtBit) & CreateMask<T>(bitCount);
         }
 
         /**
