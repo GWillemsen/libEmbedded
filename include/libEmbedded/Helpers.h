@@ -1,6 +1,6 @@
 /**
  * @file Helpers.h
- * @author Giel Willemsen (g.willemsen@student.fontys.nl)
+ * @author Giel Willemsen
  * @brief Some helper functions that don't really have a place but are really handy.
  * @version 0.1 2022-05-22 Initial version
  * @version 0.2 2022-05-28 Cleanup and fixed negative rounding problem.
@@ -15,6 +15,7 @@
 #ifndef LIBEMBEDDED_HELPERS_H
 #define LIBEMBEDDED_HELPERS_H
 #include "stdint.h"
+#include "libEmbedded/TypeTrait.h"
 
 namespace libEmbedded
 {
@@ -41,6 +42,21 @@ namespace libEmbedded
                 ((((value < 0 && divider > 0) || (value > 0 && divider < 0)) && (((TResult)value / divider) <= 0)) ? 0 : 1)
                 : 0
             );
+    }
+
+    /**
+     * @brief Clamps the value of the given input at the min and max provided (min <= result <= max).
+     * 
+     * @tparam T The type of the data value to perform the clamp on.
+     * @param input The input value to range clamp.
+     * @param max The maximum result value.
+     * @param min The minimum result value.
+     * @return T The value of input never over the max, or below the min, provided.
+     */
+    template<typename T>
+    constexpr T RangeClamp(const T& input, const T& max, const T& min)
+    {
+        return (input > max) ? max : ((input < min) ? min : input);
     }
 } // namespace libEmbedded
 

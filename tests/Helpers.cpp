@@ -3,6 +3,7 @@
 #include "limits.h"
 
 using libEmbedded::DivideByAndRoundUp;
+using libEmbedded::RangeClamp;
 
 struct DivisionHelperStruct
 {
@@ -25,6 +26,20 @@ std::ostream & operator << (std::ostream &out, const DivisionHelperStruct &c)
 }
 
 class DivideByAndRoundUpHelperFixture : public ::testing::TestWithParam<DivisionHelperStruct>
+{};
+
+class RangeClampInputHelperFixture : public ::testing::Test
+{
+public:
+    const int kMax = 30;
+    const int kMin = 5;
+};
+
+class RangeClampInputBelowMinHelperFixture : public RangeClampInputHelperFixture, public ::testing::WithParamInterface<int>
+{};
+class RangeClampInputAboveMaxHelperFixture : public RangeClampInputHelperFixture, public ::testing::WithParamInterface<int>
+{};
+class RangeClampInputInRangeHelperFixture : public RangeClampInputHelperFixture, public ::testing::WithParamInterface<int>
 {};
 
 TEST_P(DivideByAndRoundUpHelperFixture, ExactDivisionInt)
@@ -76,6 +91,54 @@ TEST_P(DivideByAndRoundUpHelperFixture , RoundUpOnInputFloatsButResultInt)
     EXPECT_EQ(GetParam().int_result, result);
 }
 
+TEST_P(RangeClampInputInRangeHelperFixture, InputWithinRange)
+{
+    const int kExpected = GetParam();
+    const int kInput = GetParam();
+    const int kResult = RangeClamp(kInput, kMax, kMin);
+    EXPECT_EQ(kExpected, kResult);
+}
+
+TEST_P(RangeClampInputAboveMaxHelperFixture, InputAboveRange)
+{
+    const int kInput = GetParam();
+    const int kExpected = kMax;
+    const int kResult = RangeClamp(kInput, kMax, kMin);
+    EXPECT_EQ(kExpected, kResult);
+}
+
+TEST_P(RangeClampInputBelowMinHelperFixture, InputBelowRange)
+{
+    const int kExpected = kMin;
+    const int kInput = GetParam();
+    const int kResult = RangeClamp(kInput, kMax, kMin);
+    EXPECT_EQ(kExpected, kResult);
+}
+
+TEST_F(RangeClampInputHelperFixture, InputEqualMaxRange)
+{
+    const int kExpected = kMax;
+    const int kInput = kMax;
+    const int kResult = RangeClamp(kInput, kMax, kMin);
+    EXPECT_EQ(kExpected, kResult);
+}
+
+TEST_F(RangeClampInputHelperFixture, InputEqualMinRange)
+{
+    const int kExpected = kMin;
+    const int kInput = kMin;
+    const int kResult = RangeClamp(kInput, kMax, kMin);
+    EXPECT_EQ(kExpected, kResult);
+}
+
+TEST_F(RangeClampInputHelperFixture, InputDoubleOnEdge)
+{
+    const int kExpected = 5;
+    const int kInput = -500;
+    const int kResult = RangeClamp(kInput, kMax, kMin);
+    EXPECT_EQ(kExpected, kResult);
+}
+
 INSTANTIATE_TEST_SUITE_P(DivideByAndRoundUpHelper, DivideByAndRoundUpHelperFixture, testing::Values(
      DivisionHelperStruct(301,   3,     100.333333, 101)
     ,DivisionHelperStruct(300,  3,      100.0,      100)
@@ -86,4 +149,23 @@ INSTANTIATE_TEST_SUITE_P(DivideByAndRoundUpHelper, DivideByAndRoundUpHelperFixtu
     ,DivisionHelperStruct(-200, 100,    -2,         -2)
     ,DivisionHelperStruct(-200, -100,   2,          2)
     ,DivisionHelperStruct(-250, 100,    -2.5,       -2)
+));
+
+INSTANTIATE_TEST_SUITE_P(
+    RangeClampInputBelowHelpers,
+    RangeClampInputBelowMinHelperFixture,
+    ::testing::Values(
+        1, -10, 4, -100, -5000
+));
+INSTANTIATE_TEST_SUITE_P(
+    RangeClampInputAboveHelpers,
+    RangeClampInputAboveMaxHelperFixture,
+    ::testing::Values(
+        31, 35, 40, 100, 5000
+));
+INSTANTIATE_TEST_SUITE_P(
+    RangeClampInputInRangeHelpers,
+    RangeClampInputInRangeHelperFixture,
+    ::testing::Values(
+        5, 10, 15, 25, 30
 ));
