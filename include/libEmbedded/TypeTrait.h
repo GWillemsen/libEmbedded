@@ -4,7 +4,8 @@
  * @brief Some reimplementations of the STL type_trait headers.
  * @version 0.1 2022-10-23 Initial version
  * @version 0.2 2022-10-27 If you try to reimplement the std don't depend on the std.  is_member_object_pointer inherited from std::integral_constant
- * @date 2022-10-27
+ * @version 0.3 2022-11-15 Addition of remove_extent
+ * @date 2022-11-15
  *
  * @copyright Copyright (c) 2022
  *
@@ -136,6 +137,10 @@ namespace libEmbedded
     template<typename T> struct remove_pointer<T* const> { typedef T type; };
     template<typename T> struct remove_pointer<T* volatile> { typedef T type; };
     template<typename T> struct remove_pointer<T* const volatile> { typedef T type; };
+
+    template<typename T> struct remove_extent { using type = T; };    
+    template<typename T> struct remove_extent<T[]> { using type = T; };
+    template<typename T, size_t N> struct remove_extent<T[N]> { using type = T; };
 
     // Miscellaneous transformations
 
